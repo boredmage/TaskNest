@@ -7,6 +7,10 @@
       "output": "static"
     },
     "name": "TaskNest",
-    "slug": "TaskNest"
+    "slug": "TaskNest",
+    "plugins": [
+      "expo-router",
+      "expo-font"
+    ]
   }
 }

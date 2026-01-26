@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@import "uniwind";
+
+@import 'heroui-native/styles';
+@source './node_modules/heroui-native/lib';
+
+@theme {
+  --color-primary: #72D000;
+  --color-secondary: #72d00026;
+  --color-transparent-day: #0000000f;
+  --color-hint-day: #A0A0A0;
+}
