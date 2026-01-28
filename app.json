@@ -30,10 +30,20 @@
       "bundleIdentifier": "com.qudusayo.tasknest",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "config": {
+        "usesNonExemptEncryption": false
       }
     },
     "android": {
       "package": "com.qudusayo.tasknest"
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "df385772-ead4-441c-91d2-339a03084c37"
+      }
+    },
+    "owner": "qudusayo"
   }
 }
