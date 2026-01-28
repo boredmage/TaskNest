@@ -8,6 +8,7 @@
     },
     "name": "TaskNest",
     "slug": "tasknest",
+    "icon": "./assets/icon.png",
     "plugins": [
       "expo-router",
       [
