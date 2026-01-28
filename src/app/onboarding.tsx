@@ -47,7 +47,7 @@ const steps = [
 ]
 
 export default function Onboarding() {
-  const [completedSteps, setCompletedSteps] = useState(true);
+  const [completedSteps, setCompletedSteps] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const carouselRef = useRef<ICarouselInstance>(null);
   const progress = useSharedValue<number>(0);
@@ -55,13 +55,15 @@ export default function Onboarding() {
   const isLastStep = currentStep === steps.length - 1;
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const [carouselLayout, setCarouselLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const [signInCardHeight, setSignInCardHeight] = useState(0);
 
-  const PILL_1_SIZE = 224; // w-56
+  const PILL_1_SIZE = 256; // w-56
   const PILL_2_SIZE = 256; // w-64
   const pill1X = useSharedValue(0);
   const pill1Y = useSharedValue(0);
   const pill2X = useSharedValue(0);
   const pill2Y = useSharedValue(0);
+  const cardProgress = useSharedValue(completedSteps ? 1 : 0);
 
   useEffect(() => {
     const { width, height } = containerSize;
@@ -71,7 +73,7 @@ export default function Onboarding() {
     // pill1: top-32 (-left-20) => top=128, left=-80
     // pill2: bottom-32 (-right-24) => bottom=128, right=-96
     const target1Left = -80;
-    const target1Top = 128;
+    const target1Top = 138;
 
     const target2Right = -96;
     const target2Bottom = 128;
@@ -112,6 +114,13 @@ export default function Onboarding() {
     carouselLayout.height,
   ]);
 
+  useEffect(() => {
+    cardProgress.value = withTiming(completedSteps ? 1 : 0, {
+      duration: 550,
+      easing: Easing.out(Easing.cubic),
+    });
+  }, [completedSteps]);
+
   const pill1Style = useAnimatedStyle(() => ({
     transform: [
       { translateX: -PILL_1_SIZE / 2 },
@@ -129,6 +138,30 @@ export default function Onboarding() {
       { translateY: pill2Y.value },
     ],
   }));
+
+  const offscreenY = containerSize.height ? containerSize.height + 200 : 1000;
+
+  const onboardingCardAnimStyle = useAnimatedStyle(() => {
+    // 0 = onboarding card visible, 1 = it has fallen off screen
+    const translateY = interpolate(cardProgress.value, [0, 1], [0, offscreenY], Extrapolation.CLAMP);
+    const opacity = interpolate(cardProgress.value, [0, 0.6, 1], [1, 0.35, 0], Extrapolation.CLAMP);
+    return { transform: [{ translateY }], opacity };
+  }, [offscreenY]);
+
+  const signInCardAnimStyle = useAnimatedStyle(() => {
+    // 0 = off screen, 1 = visible
+    const translateY = interpolate(cardProgress.value, [0, 1], [offscreenY, 0], Extrapolation.CLAMP);
+    const opacity = interpolate(cardProgress.value, [0, 0.4, 1], [0, 0.5, 1], Extrapolation.CLAMP);
+    // Center horizontally: translate by -50% of card width
+    const cardWidth = containerSize.width ? containerSize.width - 32 : 0;
+    const translateX = cardWidth ? -cardWidth / 2 : 0;
+    // Center vertically: translate by -50% of card height
+    const baseTranslateY = signInCardHeight ? -signInCardHeight / 2 : 0;
+    return {
+      transform: [{ translateX }, { translateY: baseTranslateY + translateY }],
+      opacity,
+    };
+  }, [offscreenY, containerSize.width, signInCardHeight]);
 
   const handleNext = () => {
     if (isLastStep) {
@@ -240,11 +273,12 @@ export default function Onboarding() {
         />
       </View>
 
-      {!completedSteps && <View className='w-full bg-white rounded-4xl px-4 py-10 relative'>
-        <SafeAreaView
-          edges={[]}
-          className="flex-1"
-        >
+      <Animated.View
+        pointerEvents={completedSteps ? "none" : "auto"}
+        style={[onboardingCardAnimStyle]}
+        className="w-full bg-white rounded-4xl px-4 py-10 relative"
+      >
+        <SafeAreaView edges={[]} className="flex-1">
           <View className='items-start justify-start flex-row'>
             <Pagination.Custom
               progress={progress}
@@ -302,10 +336,27 @@ export default function Onboarding() {
             </CustomButton>
           </View>
         </SafeAreaView>
-      </View>}
+      </Animated.View>
 
-      {completedSteps && <View className="absolute top-1/2 left-4 right-4 -translate-y-1/2">
-        <View className="bg-white rounded-4xl px-6 py-8 shadow-sm z-10 opacity-100">
+      <Animated.View
+        pointerEvents={completedSteps ? "auto" : "none"}
+        style={[
+          {
+            position: "absolute",
+            top: containerSize.height / 2,
+            left: containerSize.width / 2,
+            width: Math.max((containerSize.width || 0) - 32, 0),
+          },
+          signInCardAnimStyle,
+        ]}
+      >
+        <View
+          className="bg-white rounded-4xl px-6 py-8 shadow-sm z-10 opacity-100"
+          onLayout={(e) => {
+            const { height } = e.nativeEvent.layout;
+            setSignInCardHeight(height);
+          }}
+        >
           {/* Close button */}
           <View className="items-end mb-4">
             <Button
@@ -367,7 +418,7 @@ export default function Onboarding() {
             </Button>
           </View>
         </View>
-      </View>}
+      </Animated.View>
 
       <StatusBar style="light" />
     </View>
