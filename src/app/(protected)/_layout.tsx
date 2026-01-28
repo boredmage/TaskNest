@@ -13,6 +13,7 @@ export default function ProtectedLayout() {
       <Stack.Screen name="completed" options={{ headerShown: false }} />
       <Stack.Screen name="overdue" options={{ headerShown: false }} />
       <Stack.Screen name="archive" options={{ headerShown: false }} />
+      <Stack.Screen name="new-task" options={{ headerShown: false }} />
       <Stack.Screen name="*" />
     </Stack>
   );

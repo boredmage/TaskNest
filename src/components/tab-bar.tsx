@@ -214,10 +214,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
             fabScale.value = withTiming(1, { duration: 120 });
           }}
           onPress={() => {
-            const tasksRoute = state.routes.find((r) => r.name === "tasks");
-            if (tasksRoute) {
-              navigation.navigate(tasksRoute.name, tasksRoute.params);
-            }
+            navigation.navigate("new-task");
           }}
         >
           <View className="w-14 h-14 rounded-full bg-primary items-center justify-center">
