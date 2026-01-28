@@ -9,4 +9,17 @@
   --color-secondary: #72d00026;
   --color-transparent-day: #0000000f;
   --color-hint-day: #A0A0A0;
+  --font-family-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-family-inter-regular: 'Inter-Regular';
+  --font-family-inter-medium: 'Inter-Medium';
+  --font-family-inter-semibold: 'Inter-SemiBold';
+  --font-family-inter-bold: 'Inter-Bold';
+  --font-family-inter-extrabold: 'Inter-ExtraBold';
+  --font-family-inter-black: 'Inter-Black';
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
 }
