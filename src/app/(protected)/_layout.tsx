@@ -9,6 +9,10 @@ export default function ProtectedLayout() {
       }}
     >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="todo" options={{ headerShown: false }} />
+      <Stack.Screen name="completed" options={{ headerShown: false }} />
+      <Stack.Screen name="overdue" options={{ headerShown: false }} />
+      <Stack.Screen name="archive" options={{ headerShown: false }} />
       <Stack.Screen name="*" />
     </Stack>
   );
