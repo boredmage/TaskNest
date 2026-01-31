@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs } from "expo-router";
 import { View, Text } from "react-native";
 import TabBar from "@/components/tab-bar";
+import { useTranslation } from "react-i18next";
 
 function TabLabel({ label }: { label: string }) {
   return (
@@ -12,6 +13,8 @@ function TabLabel({ label }: { label: string }) {
 }
 
 export default function TabsLayout() {
+  const { t } = useTranslation();
+  
   return (
     <Tabs
       screenOptions={{
@@ -22,28 +25,28 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Family",
+          title: t("tabs.family"),
           tabBarLabel: () => <TabLabel label="Family" />,
         }}
       />
       <Tabs.Screen
         name="tasks"
         options={{
-          title: "Tasks",
+          title: t("tabs.tasks"),
           tabBarLabel: () => <TabLabel label="Tasks" />,
         }}
       />
       <Tabs.Screen
         name="news"
         options={{
-          title: "News",
+          title: t("tabs.news"),
           tabBarLabel: () => <TabLabel label="News" />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
-          title: "Settings",
+          title: t("tabs.settings"),
           tabBarLabel: () => <TabLabel label="Settings" />,
         }}
       />

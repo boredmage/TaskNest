@@ -3,8 +3,9 @@ import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "heroui-native";
 import { useRouter } from "expo-router";
-import { CustomSwitch } from "../../../components/custom-switch";
+import { useTranslation } from "react-i18next";
 
+import { CustomSwitch } from "../../../components/custom-switch";
 import Shield from "../../../components/icons/shield";
 import NotificationBell from "../../../components/icons/notification-bell";
 import Globe from "../../../components/icons/globe";
@@ -17,6 +18,7 @@ import ChevronRight from "../../../components/icons/chevron-right";
 const Settings = () => {
   const router = useRouter();
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const { t } = useTranslation();
 
   const Row = ({
     title,
@@ -54,7 +56,7 @@ const Settings = () => {
     >
       <View className="flex-1 bg-[#F2F2F2] px-4">
         <Text className="text-2xl font-semibold text-black self-center mb-4">
-          Settings
+          {t("tabs.settings")}
         </Text>
 
         <Pressable className="mb-4 active:opacity-90" onPress={() => router.push("/settings/profile")}>
@@ -80,11 +82,11 @@ const Settings = () => {
         </Pressable>
 
         <View className="bg-white rounded-xl p-4 gap-4">
-          <Row title="Security" icon={<Shield />} onPress={() => router.push("/settings/security")} />
-          <Row title="Notifications" icon={<NotificationBell />} onPress={() => router.push("/settings/notifications")} />
-          <Row title="Language" icon={<Globe />} onPress={() => { }} />
+          <Row title={t("settings.security")} icon={<Shield />} onPress={() => router.push("/settings/security")} />
+          <Row title={t("settings.notifications")} icon={<NotificationBell />} onPress={() => router.push("/settings/notifications")} />
+          <Row title={t("settings.language")} icon={<Globe />} onPress={() => router.push("/settings/language")} />
           <Row
-            title="Dark Mode"
+            title={t("settings.darkMode")}
             icon={<Moon />}
             right={
               <CustomSwitch
@@ -94,12 +96,12 @@ const Settings = () => {
               />
             }
           />
-          <Row title="Support" icon={<Message />} onPress={() => { }} />
+          <Row title={t("settings.support")} icon={<Message />} onPress={() => { }} />
         </View>
 
         <View className="bg-white rounded-xl p-4 gap-4 mt-4">
-          <Row title="Help Center" icon={<Info />} onPress={() => { }} />
-          <Row title="About TaskNest" icon={<AboutFile />} onPress={() => { }} />
+          <Row title={t("settings.helpCenter")} icon={<Info />} onPress={() => { }} />
+          <Row title={t("settings.about")} icon={<AboutFile />} onPress={() => { }} />
         </View>
 
         <View className="pb-6 pt-4">
@@ -108,7 +110,7 @@ const Settings = () => {
             className="rounded-xl"
             onPress={() => router.replace("/onboarding")}
           >
-            Logout
+            {t("settings.logout")}
           </Button>
         </View>
       </View>

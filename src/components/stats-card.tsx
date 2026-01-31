@@ -8,6 +8,7 @@ import TrophyIcon from './icons/trophy-icon'
 import ClockIcon from './icons/clock-icon'
 import ArchiveIcon from './icons/archive-icon'
 import { SvgProps } from 'react-native-svg'
+import { useTranslation } from 'react-i18next'
 
 const statusIconMap: Record<Status, {
   icon: React.FC<SvgProps>,
@@ -42,6 +43,7 @@ const statusIconMap: Record<Status, {
 }
 
 const StatsCard = ({ type, value }: { type: Status, value: number }) => {
+  const { t } = useTranslation();
   const Icon = statusIconMap[type].icon;
 
   return (
@@ -57,7 +59,7 @@ const StatsCard = ({ type, value }: { type: Status, value: number }) => {
           <Text className='text-text-day text-2xl font-medium'>{value}</Text>
         </View>
         <Text className='text-text-day text-base font-medium'>
-          {statusIconMap[type].title}
+          {t(`statuses.${statusIconMap[type].route}`)}
         </Text>
       </TouchableOpacity>
     </Link>

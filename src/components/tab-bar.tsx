@@ -77,11 +77,11 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
         </Svg>
 
         <View
-          className="flex-row items-center justify-between px-2.5 pb-5 gap-8"
+          className="flex-row items-center justify-between pb-5 gap-4"
         >
           {/* Left two tabs */}
           <View
-            className="flex-row flex-1 items-center justify-between px-2.5"
+            className="flex-row flex-1 items-center"
           >
             {state.routes.slice(0, 2).map((route, index) => {
               if (["_sitemap", "+not-found"].includes(route.name)) return null;
@@ -118,7 +118,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
                   testID={options.tabBarButtonTestID}
                   onPress={onPress}
                   activeOpacity={0.8}
-                  className="items-center justify-center gap-1.5"
+                  className="items-center justify-center gap-1.5 flex-1"
                 >
                   <IconComponent
                     width={22}
@@ -143,7 +143,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
 
           {/* Right two tabs */}
           <View
-            className="flex-row flex-1 items-center justify-between px-2.5"
+            className="flex-row flex-1 items-center"
           >
             {state.routes.slice(-2).map((route, index) => {
               if (["_sitemap", "+not-found"].includes(route.name)) return null;
@@ -180,7 +180,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
                   testID={options.tabBarButtonTestID}
                   onPress={onPress}
                   activeOpacity={0.8}
-                  className="items-center justify-center gap-1.5"
+                  className="items-center justify-center gap-1.5 flex-1"
                 >
                   <IconComponent
                     width={22}

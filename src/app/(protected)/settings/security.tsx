@@ -2,6 +2,7 @@ import { View, Text } from "react-native";
 import { useState } from "react";
 import { Switch } from "heroui-native";
 import WithArrowBack from "@/layout/with-arrow-back";
+import { useTranslation } from "react-i18next";
 
 type SecurityKey =
   | "rememberMe"
@@ -58,6 +59,7 @@ const SecurityRow = ({ title, description, value, onChange }: SecurityRowProps) 
 };
 
 const Security = () => {
+  const { t } = useTranslation();
   const [security, setSecurity] = useState({
     rememberMe: true,
     biometricId: true,
@@ -72,7 +74,7 @@ const Security = () => {
   };
 
   return (
-    <WithArrowBack title="Security">
+    <WithArrowBack title={t("settings.security")}>
       <View className="flex-1 bg-[#F2F2F2] mt-10">
         <View className="gap-6">
           <SecurityRow

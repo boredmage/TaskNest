@@ -6,7 +6,10 @@ import {
   KeyboardAvoidingView,
   KeyboardProvider,
 } from 'react-native-keyboard-controller';
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
+import "@/i18n";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import i18n from "@/i18n";
 
 const AppContent = () => {
   const contentWrapper = useCallback(
@@ -40,6 +43,15 @@ const AppContent = () => {
 };
 
 export default function Layout() {
+  useEffect(() => {
+    (async () => {
+      const savedLang = await AsyncStorage.getItem("language");
+      if (savedLang) {
+        await i18n.changeLanguage(savedLang);
+      }
+    })();
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <KeyboardProvider>
@@ -47,5 +59,4 @@ export default function Layout() {
       </KeyboardProvider>
     </GestureHandlerRootView>
   );
-
 }

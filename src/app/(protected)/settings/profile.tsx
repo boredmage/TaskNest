@@ -6,13 +6,15 @@ import { CustomButton } from "@/components/custom-button";
 import PlusIcon from "@/components/icons/plus";
 import ChevronRight from "@/components/icons/chevron-right";
 import CameraPlus from "@/components/icons/camera-plus";
+import { useTranslation } from "react-i18next";
 
 const Profile = () => {
   const [name, setName] = useState("Alex Johnson");
   const [dateOfBirth, setDateOfBirth] = useState("30.08.2001");
+  const { t } = useTranslation();
 
   return (
-    <WithArrowBack title="Profile">
+    <WithArrowBack title={t("settings.profile")}>
       <View className="flex-1 mt-10">
         {/* Profile Picture Section */}
         <View className="items-center mb-8">

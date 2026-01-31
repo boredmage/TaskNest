@@ -23,7 +23,8 @@
             "node_modules/@expo-google-fonts/inter/900Black/Inter_900Black.ttf"
           ]
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "ios": {
       "supportsTablet": false,

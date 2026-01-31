@@ -1,0 +1,25 @@
+{
+  "settings": {
+    "profile": "Profile",
+    "security": "Security",
+    "notifications": "Notifications",
+    "language": "Language",
+    "darkMode": "Dark Mode",
+    "support": "Support",
+    "helpCenter": "Help Center",
+    "about": "About TaskNest",
+    "logout": "Logout"
+  },
+  "tabs": {
+    "family": "Family",
+    "tasks": "Tasks",
+    "news": "News",
+    "settings": "Settings"
+  },
+  "statuses": {
+    "todo": "Tasks",
+    "completed": "Completed",
+    "overdue": "Overdue",
+    "archive": "Archived"
+  }
+}

@@ -1,21 +1,21 @@
 import { StatusBar } from "expo-status-bar";
-import { Text, TouchableOpacity, View } from "react-native";
-import { Link, useRouter } from "expo-router";
+import { Text, View } from "react-native";
+import { Link } from "expo-router";
 import { CustomButton } from '@/components/custom-button';
 import { SafeAreaView } from "react-native-safe-area-context";
 import StatsCard from "@/components/stats-card";
 import { StatusEnum as Status } from "@/type";
-import FileIcon from "@/components/icons/file-icon";
+import { useTranslation } from "react-i18next";
 
 const Tasks = () => {
-  const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView
       style={{ flex: 1 }}
     >
       <View className="flex-1 px-4 gap-4">
-        <Text className="text-2xl font-semibold text-text-day self-center">Tasks</Text>
+        <Text className="text-2xl font-semibold text-text-day self-center">{t("tabs.tasks")}</Text>
 
         <View className="gap-2">
           <View className="flex-row gap-2">

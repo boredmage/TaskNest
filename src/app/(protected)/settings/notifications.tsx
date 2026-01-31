@@ -2,6 +2,7 @@ import { View, Text } from "react-native";
 import { useState } from "react";
 import { Switch } from "heroui-native";
 import WithArrowBack from "@/layout/with-arrow-back";
+import { useTranslation } from "react-i18next";
 
 type NotificationKey =
   | "newTaskAssigned"
@@ -65,13 +66,14 @@ const Notifications = () => {
     familyMemberJoined: true,
     taskOverdue: true,
   });
-
+  const { t } = useTranslation();
+  
   const toggle = (key: NotificationKey) => {
     setSettings((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   return (
-    <WithArrowBack title="Notifications">
+    <WithArrowBack title={t("settings.notifications")}>
       <View className="flex-1 bg-[#F2F2F2] mt-10">
         <View className="gap-6">
           <NotificationRow
