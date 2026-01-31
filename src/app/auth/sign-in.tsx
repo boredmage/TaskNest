@@ -17,7 +17,7 @@ const SignIn = () => {
     <View className='flex-1'>
       <View className='mb-6'>
         <Text className='text-2xl font-semibold'>Sign in</Text>
-        <Text className='text-base text-hint-day'>Enter your email & password to sign in.</Text>
+        <Text className='text-base text-hint'>Enter your email & password to sign in.</Text>
       </View>
 
       <View className="gap-4">
@@ -55,15 +55,15 @@ const SignIn = () => {
       <View className='flex-row justify-end items-center mt-4'>
         <Link href="/auth/reset-password" asChild>
           <TouchableOpacity>
-            <Text className='text-primary text-base font-medium'>Forgot password?</Text>
+            <Text className='text-main text-base font-medium'>Forgot password?</Text>
           </TouchableOpacity>
         </Link>
       </View>
 
       <View className='flex-col gap-8 mt-auto'>
         <View className='flex-row justify-center gap-2'>
-          <Text className='text-hint-day text-base'>Don't have an account?</Text>
-          <Text className='text-primary text-base font-medium'>Sign up</Text>
+          <Text className='text-hint text-base'>Don't have an account?</Text>
+          <Text className='text-main text-base font-medium'>Sign up</Text>
         </View>
 
         <CustomButton className='w-full' onPress={() => { }}>

@@ -7,8 +7,8 @@ const customButtonVariants = tv({
   base: 'font-semibold rounded-xl text-base disabled:bg-transparent-day disabled:opacity-100 disabled:text-red-500 group',
   variants: {
     intent: {
-      primary: 'bg-primary',
-      secondary: 'bg-secondary',
+      primary: 'bg-main',
+      secondary: 'bg-main-light',
       danger: 'bg-red-500',
     },
   },
@@ -18,11 +18,11 @@ const customButtonVariants = tv({
 });
 
 const customLabelVariants = tv({
-  base: 'text-hint-day',
+  base: 'text-hint',
   variants: {
     intent: {
       primary: 'text-white',
-      secondary: 'text-primary',
+      secondary: 'text-main',
       danger: 'text-white',
     },
   },

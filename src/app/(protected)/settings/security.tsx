@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Switch } from "heroui-native";
 import WithArrowBack from "@/layout/with-arrow-back";
 import { useTranslation } from "react-i18next";
+import { CustomSwitch } from "@/components/custom-switch";
 
 type SecurityKey =
   | "rememberMe"
@@ -22,38 +23,19 @@ type SecurityRowProps = {
 const SecurityRow = ({ title, description, value, onChange }: SecurityRowProps) => {
   return (
     <View>
-      <View className="bg-white rounded-xl px-4 py-3">
+      <View className="bg-primary-day dark:bg-primary-night rounded-xl px-4 py-3">
         <View className="flex-row items-center">
-          <Text className="flex-1 text-base text-black">
+          <Text className="flex-1 text-base text-text-day dark:text-text-night">
             {title}
           </Text>
-          <Switch
-            className="w-[48px] h-[28px]"
-            isSelected={value}
-            onSelectedChange={onChange}
-            animation={{
-              backgroundColor: {
-                value: ["#E5E5E5", "#72D000"],
-              },
-            }}
-          >
-            <Switch.Thumb
-              className="size-5 bg-white rounded-full"
-              animation={{
-                left: {
-                  value: 3,
-                  springConfig: {
-                    damping: 30,
-                    stiffness: 300,
-                    mass: 1,
-                  },
-                },
-              }}
-            />
-          </Switch>
+          <CustomSwitch
+            value={value}
+            onValueChange={onChange}
+            size="medium"
+          />
         </View>
       </View>
-      <Text className="mt-1 text-xs text-hint-day px-4">{description}</Text>
+      <Text className="mt-1 text-xs text-hint px-4">{description}</Text>
     </View>
   );
 };
@@ -75,7 +57,7 @@ const Security = () => {
 
   return (
     <WithArrowBack title={t("settings.security")}>
-      <View className="flex-1 bg-[#F2F2F2] mt-10">
+      <View className="flex-1 mt-10">
         <View className="gap-6">
           <SecurityRow
             title="Remember me"

@@ -19,12 +19,12 @@ const Profile = () => {
         {/* Profile Picture Section */}
         <View className="items-center mb-8">
           <View className="relative">
-            <View className="w-24 h-24 rounded-full bg-[#E5E5E5] items-center justify-center">
+            <View className="w-24 h-24 rounded-full bg-primary-day dark:bg-primary-night items-center justify-center">
               <View className="size-12 items-center justify-center">
                 <CameraPlus />
               </View>
             </View>
-            <Pressable className="absolute bottom-0 right-0 size-7 bg-primary rounded-xl items-center justify-center border-2 border-white">
+            <Pressable className="absolute bottom-0 right-0 size-7 bg-main rounded-xl items-center justify-center border-2 border-white dark:border-background-night">
               <PlusIcon width={16} height={16} />
             </Pressable>
           </View>

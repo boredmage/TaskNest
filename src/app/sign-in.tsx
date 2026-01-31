@@ -22,14 +22,16 @@ const SignIn = () => {
 
   const handleAppleSignIn = () => {
     // TODO: Implement Apple sign-in
+    router.replace('/');
   };
 
   const handleGoogleSignIn = () => {
     // TODO: Implement Google sign-in
+    router.replace('/');
   };
 
   return (
-    <View className="flex-1 bg-primary">
+    <View className="flex-1 bg-main">
       <View className="flex-1 justify-center p-4">
         <View className="relative">
           {/* Decorative background pills, positioned relative to form */}
@@ -58,7 +60,7 @@ const SignIn = () => {
             {/* Heading */}
             <View className="mb-6">
               <Text className="text-2xl font-semibold mb-2">Welcome to TaskNest!</Text>
-              <Text className="text-base text-hint-day leading-snug">
+              <Text className="text-base text-hint leading-snug">
                 Create tasks, share responsibilities, and keep your family life running smoothly —
                 all in one place.
               </Text>

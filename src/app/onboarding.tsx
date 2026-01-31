@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { Text, View, Image, Dimensions } from "react-native";
 import { useEffect, useState, useRef } from "react";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import Animated, {
   Easing,
   Extrapolation,
@@ -47,6 +47,7 @@ const steps = [
 ]
 
 export default function Onboarding() {
+  const router = useRouter();
   const [completedSteps, setCompletedSteps] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const carouselRef = useRef<ICarouselInstance>(null);
@@ -200,15 +201,17 @@ export default function Onboarding() {
 
   const handleAppleSignIn = () => {
     // TODO: Implement Apple sign-in
+    router.replace('/');
   };
 
   const handleGoogleSignIn = () => {
     // TODO: Implement Google sign-in
+    router.replace('/');
   };
 
   return (
     <View
-      className="flex-1 bg-primary p-4 py-6 relative"
+      className="flex-1 bg-main p-4 py-6 relative"
       onLayout={(e) => {
         const { width, height } = e.nativeEvent.layout;
         setContainerSize({ width, height });
@@ -276,7 +279,7 @@ export default function Onboarding() {
       <Animated.View
         pointerEvents={completedSteps ? "none" : "auto"}
         style={[onboardingCardAnimStyle]}
-        className="w-full bg-white rounded-4xl px-4 py-10 relative"
+        className="w-full bg-background-day dark:bg-background-night rounded-4xl px-4 py-10 relative"
       >
         <SafeAreaView edges={[]} className="flex-1">
           <View className='items-start justify-start flex-row'>
@@ -324,8 +327,8 @@ export default function Onboarding() {
             />
           </View>
           <View className='gap-2 my-6'>
-            <Text className='text-xl font-semibold leading-tight'>{currentStepData.title}</Text>
-            <Text className='text-base leading-tight'>{currentStepData.description}</Text>
+            <Text className='text-xl font-semibold text-text-day dark:text-text-night leading-tight'>{currentStepData.title}</Text>
+            <Text className='text-base text-text-day dark:text-text-night leading-tight'>{currentStepData.description}</Text>
           </View>
           <View className='flex-row justify-between gap-2'>
             <CustomButton className='flex-1' intent='secondary' onPress={handleSkip}>
@@ -372,7 +375,7 @@ export default function Onboarding() {
           {/* Heading */}
           <View className="mb-6">
             <Text className="text-2xl font-semibold mb-2">Welcome to TaskNest!</Text>
-            <Text className="text-base text-hint-day leading-snug">
+            <Text className="text-base text-hint leading-snug">
               Create tasks, share responsibilities, and keep your family life running smoothly —
               all in one place.
             </Text>

@@ -48,7 +48,7 @@ const StatsCard = ({ type, value }: { type: Status, value: number }) => {
 
   return (
     <Link href={`/${statusIconMap[type].route}`} asChild>
-      <TouchableOpacity activeOpacity={0.85} className='bg-white rounded-xl p-4 flex-1 gap-4'>
+      <TouchableOpacity activeOpacity={0.85} className='bg-primary-day dark:bg-primary-night rounded-xl p-4 flex-1 gap-4'>
         <View className='flex-row items-start justify-between gap-2'>
           <View
             className='rounded-lg p-2'
@@ -56,9 +56,9 @@ const StatsCard = ({ type, value }: { type: Status, value: number }) => {
           >
             <Icon />
           </View>
-          <Text className='text-text-day text-2xl font-medium'>{value}</Text>
+          <Text className='text-text-day dark:text-text-night text-2xl font-medium'>{value}</Text>
         </View>
-        <Text className='text-text-day text-base font-medium'>
+        <Text className='text-text-day dark:text-text-night text-base font-medium'>
           {t(`statuses.${statusIconMap[type].route}`)}
         </Text>
       </TouchableOpacity>

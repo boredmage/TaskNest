@@ -5,11 +5,23 @@
 @source './node_modules/heroui-native/lib';
 
 @theme {
-  --color-primary: #72D000;
-  --color-secondary: #72d00026;
+  --color-main: #72D000;
+  --color-hint: #A0A0A0;
+  --color-main-light: #72d00026;
+
+  --color-primary-day: #FFFFFF;
+  --color-primary-night: #303030;
+
+
+  --color-background-day: #FFFFFF;
+  --color-background-night: #222222;
+
   --color-transparent-day: #0000000f;
-  --color-hint-day: #A0A0A0;
+  --color-transparent-night: #ffffff1a;
+
   --color-text-day: #1B1B1B;
+  --color-text-night: #FFFFFF;
+
   --font-family-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-family-inter-regular: 'Inter-Regular';
   --font-family-inter-medium: 'Inter-Medium';

@@ -60,7 +60,7 @@ const ResetPassword = () => {
     <View className='flex-1'>
       <View className='mb-6'>
         <Text className='text-2xl font-semibold'>{currentStepData.title}</Text>
-        <Text className='text-base text-hint-day'>{currentStepData.description}</Text>
+        <Text className='text-base text-hint'>{currentStepData.description}</Text>
       </View>
 
       <View className="gap-4">
@@ -149,8 +149,8 @@ const ResetPassword = () => {
       {currentStep === 1 && (
         <View className='flex-row justify-start items-center'>
           <View className='flex-row justify-center mt-4 gap-2'>
-            <Text className='text-hint-day text-base'>Didn't receive OTP?</Text>
-            <Text className='text-primary text-base font-medium underline'>Resend code</Text>
+            <Text className='text-hint text-base'>Didn't receive OTP?</Text>
+            <Text className='text-main text-base font-medium underline'>Resend code</Text>
           </View>
         </View>
       )}

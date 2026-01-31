@@ -11,7 +11,7 @@ const Arrow = (props: SvgProps) => (
   >
     <Path
       d="M5.833 14h16.334M5.833 14l7 7m-7-7 7-7"
-      stroke="#1b1b1b"
+      stroke={props.stroke || '#1b1b1b'}
       strokeWidth={2.333}
       strokeLinecap="round"
       strokeLinejoin="round"

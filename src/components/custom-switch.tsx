@@ -1,5 +1,6 @@
 import { Switch } from "heroui-native";
 import type { SwitchProps } from "heroui-native";
+import { useColorScheme } from "react-native";
 
 interface CustomSwitchProps extends Omit<SwitchProps, "className" | "animation"> {
   value: boolean;
@@ -32,6 +33,7 @@ export function CustomSwitch({
   ...props
 }: CustomSwitchProps) {
   const sizeConfig = sizeClasses[size];
+  const isDarkTheme = useColorScheme() === 'dark';
 
   return (
     <Switch
@@ -40,7 +42,7 @@ export function CustomSwitch({
       onSelectedChange={onValueChange}
       animation={{
         backgroundColor: {
-          value: ["#E5E5E5", "#72D000"],
+          value: [isDarkTheme ? "#78788029" : "#E5E5E5", "#72D000"],
         },
       }}
       {...props}

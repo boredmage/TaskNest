@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Switch } from "heroui-native";
 import WithArrowBack from "@/layout/with-arrow-back";
 import { useTranslation } from "react-i18next";
+import { CustomSwitch } from "@/components/custom-switch";
+import { StatusBar } from "expo-status-bar";
 
 type NotificationKey =
   | "newTaskAssigned"
@@ -16,7 +18,6 @@ type NotificationRowProps = {
   description: string;
   value: boolean;
   onChange: () => void;
-  highlightThumb?: boolean;
 };
 
 const NotificationRow = ({
@@ -24,36 +25,18 @@ const NotificationRow = ({
   description,
   value,
   onChange,
-  highlightThumb,
 }: NotificationRowProps) => {
   return (
     <View>
-      <View className="bg-white rounded-xl px-4 py-3">
+      <View className="bg-primary-day dark:bg-primary-night rounded-xl px-4 py-3">
         <View className="flex-row items-center">
-          <Text className="flex-1 text-base text-black">
+          <Text className="flex-1 text-base text-text-day dark:text-text-night">
             {title}
           </Text>
-        <Switch className="w-[48px] h-[28px]" isSelected={value}
-            animation={{
-              backgroundColor: {
-                value: ['#E5E5E5', '#72D000'],
-              },
-            }}
-            onSelectedChange={onChange}>
-          <Switch.Thumb className="size-5 bg-white rounded-full" animation={{
-              left: {
-              value: 3,
-                springConfig: {
-                  damping: 30,
-                  stiffness: 300,
-                  mass: 1,
-                },
-              },
-            }} />
-          </Switch>
+          <CustomSwitch value={value} onValueChange={onChange} size="medium" />
         </View>
       </View>
-      <Text className="mt-1 text-xs text-hint-day px-1">{description}</Text>
+      <Text className="mt-1 text-xs text-hint px-1">{description}</Text>
     </View>
   );
 };
@@ -67,21 +50,20 @@ const Notifications = () => {
     taskOverdue: true,
   });
   const { t } = useTranslation();
-  
+
   const toggle = (key: NotificationKey) => {
     setSettings((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   return (
     <WithArrowBack title={t("settings.notifications")}>
-      <View className="flex-1 bg-[#F2F2F2] mt-10">
+      <View className="flex-1 mt-10">
         <View className="gap-6">
           <NotificationRow
             title="New Task Assigned"
             description="Get notified when someone assigns a task to you."
             value={settings.newTaskAssigned}
             onChange={() => toggle("newTaskAssigned")}
-            highlightThumb
           />
           <NotificationRow
             title="Task Completed"
@@ -109,6 +91,7 @@ const Notifications = () => {
           />
         </View>
       </View>
+      <StatusBar style="auto" />
     </WithArrowBack>
   );
 };

@@ -1,6 +1,6 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import React from "react";
-import { Dimensions, Platform, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, Platform, Text, TouchableOpacity, useColorScheme, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import Animated, {
   useAnimatedStyle,
@@ -30,6 +30,7 @@ const icons = {
 
 const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   const fabScale = useSharedValue(1);
+  const isDarkMode = useColorScheme() === 'dark';
 
   const fabAnimatedStyle = useAnimatedStyle(() => ({
     transform: [
@@ -56,7 +57,6 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
           shadowOffset: { width: 0, height: 10 },
           shadowRadius: 20,
           shadowOpacity: 0.1,
-          elevation: 10,
         }}
         className="overflow-hidden w-full items-end justify-center rounded-t-lg"
       >
@@ -70,7 +70,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
           }}
         >
           <Path
-            fill="white"
+            fill={isDarkMode ? '#3C3C3C' : '#FFFFFF'}
             fillRule="evenodd"
             d={createNotchedPath(SCREEN_WIDTH, BAR_HEIGHT, NOTCH_RADIUS)}
           />
@@ -217,7 +217,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
             navigation.navigate("new-task");
           }}
         >
-          <View className="w-14 h-14 rounded-full bg-primary items-center justify-center">
+          <View className="w-14 h-14 rounded-full bg-main items-center justify-center">
             <PlusIcon width={22} height={22} />
           </View>
         </TouchableOpacity>
