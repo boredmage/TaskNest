@@ -1,5 +1,5 @@
+import { Stack } from "expo-router";
 import React from "react";
-import { Slot, Stack } from "expo-router";
 
 export default function ProtectedLayout() {
   return (

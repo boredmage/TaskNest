@@ -1,8 +1,8 @@
-import { View, Text } from "react-native";
-import { useState } from "react";
-import WithArrowBack from "@/layout/with-arrow-back";
-import { useTranslation } from "react-i18next";
 import { CustomSwitch } from "@/components/custom-switch";
+import WithArrowBack from "@/layout/with-arrow-back";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Text, View } from "react-native";
 
 type SecurityKey =
   | "rememberMe"
@@ -29,13 +29,13 @@ const SecurityRow = ({
     <View>
       <View className="bg-primary-day dark:bg-primary-night rounded-xl px-4 py-3">
         <View className="flex-row items-center">
-          <Text className="flex-1 text-base text-text-day dark:text-text-night">
+          <Text className="text-text-day dark:text-text-night flex-1 text-base">
             {title}
           </Text>
           <CustomSwitch value={value} onValueChange={onChange} size="medium" />
         </View>
       </View>
-      <Text className="mt-1 text-xs text-hint px-4">{description}</Text>
+      <Text className="text-hint mt-1 px-4 text-xs">{description}</Text>
     </View>
   );
 };
@@ -57,7 +57,7 @@ const Security = () => {
 
   return (
     <WithArrowBack title={t("settings.security")}>
-      <View className="flex-1 mt-10">
+      <View className="mt-10 flex-1">
         <View className="gap-6">
           <SecurityRow
             title="Remember me"

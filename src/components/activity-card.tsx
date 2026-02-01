@@ -1,14 +1,14 @@
-import { View, Text, Pressable, LayoutChangeEvent } from "react-native";
-import { useState, useEffect } from "react";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-} from "react-native-reanimated";
-import { Avatar, Checkbox, cn } from "heroui-native";
-import { StatusEnum } from "@/type";
 import { useAppTheme } from "@/contexts/app-theme-context";
+import { StatusEnum } from "@/type";
+import { Avatar, Checkbox, cn } from "heroui-native";
+import { useEffect, useState } from "react";
+import { LayoutChangeEvent, Pressable, Text, View } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
 const MONTH_NAMES = [
   "January",
@@ -125,7 +125,7 @@ export function ActivityCard({
       }}
     >
       <View className="flex-row items-center gap-3">
-        <View className="flex-1 min-w-0">
+        <View className="min-w-0 flex-1">
           <View
             onLayout={onTitleLayout}
             className="relative"
@@ -133,7 +133,7 @@ export function ActivityCard({
           >
             <Text
               className={cn(
-                "text-base font-semibold text-text-day dark:text-text-night",
+                "text-text-day dark:text-text-night text-base font-semibold",
                 status === StatusEnum.OVERDUE &&
                   "text-[#FF5050] dark:text-[#FF5050]"
               )}
@@ -163,7 +163,7 @@ export function ActivityCard({
           </View>
           <Text
             className={cn(
-              "text-base text-hint mt-1 leading-5",
+              "text-hint mt-1 text-base leading-5",
               status === StatusEnum.OVERDUE && "text-[#FF5050]"
             )}
             numberOfLines={3}
@@ -176,7 +176,7 @@ export function ActivityCard({
           variant="secondary"
           onSelectedChange={handleToggle}
           className={cn(
-            "rounded-full size-6 shadow-none border-2",
+            "size-6 rounded-full border-2 shadow-none",
             isCompleted
               ? "bg-main border-main"
               : "bg-primary-day dark:bg-primary-night border-transparent-day dark:border-transparent-night"
@@ -186,12 +186,12 @@ export function ActivityCard({
         </Checkbox>
       </View>
 
-      <View className="h-px bg-transparent-day dark:bg-transparent-night my-3" />
+      <View className="bg-transparent-day dark:bg-transparent-night my-3 h-px" />
 
       <View className="flex-row items-center justify-between">
         <Text
           className={cn(
-            "text-base text-hint",
+            "text-hint text-base",
             status === StatusEnum.OVERDUE &&
               "text-[#FF5050] dark:text-[#FF5050]"
           )}
@@ -204,12 +204,12 @@ export function ActivityCard({
               key={`${uri}-${index}`}
               alt={`Assignee ${index + 1}`}
               className={cn(
-                "w-8 h-8 rounded-full border-2 border-background-day dark:border-background-night",
+                "border-background-day dark:border-background-night h-8 w-8 rounded-full border-2",
                 index === 0 ? "ml-0" : "-ml-4"
               )}
             >
               <Avatar.Image source={{ uri }} />
-              <Avatar.Fallback className="w-8 h-8 rounded-full bg-[#E5E5EA]" />
+              <Avatar.Fallback className="h-8 w-8 rounded-full bg-[#E5E5EA]" />
             </Avatar>
           ))}
         </View>

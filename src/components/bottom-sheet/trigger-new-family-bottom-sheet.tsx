@@ -1,17 +1,17 @@
-import { View } from "react-native";
-import { useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Avatar, BottomSheet, cn, RadioGroup } from "heroui-native";
-import { CustomButton } from "@/components/custom-button";
 import { BottomSheetBlurOverlay } from "@/components/bottom-sheet/bottom-sheet-blur-overlay";
+import { CustomButton } from "@/components/custom-button";
 import { JoinFamilyDialog } from "@/components/dialog/join-family-dialog";
 import File from "@/components/icons/bottom-sheet/file";
-import Pin from "@/components/icons/bottom-sheet/pin";
 import Heart from "@/components/icons/bottom-sheet/heart";
 import Link from "@/components/icons/bottom-sheet/link";
 import Message from "@/components/icons/bottom-sheet/message";
+import Pin from "@/components/icons/bottom-sheet/pin";
 import Users from "@/components/icons/bottom-sheet/users";
 import { useAppTheme } from "@/contexts/app-theme-context";
+import { Avatar, BottomSheet, cn, RadioGroup } from "heroui-native";
+import { useState } from "react";
+import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export type FamilyOption = "create" | "join" | null;
 
@@ -77,7 +77,7 @@ export function TriggerNewFamilyBottomSheet() {
           backgroundClassName="rounded-[32px] bg-background-day dark:bg-background-night"
           contentContainerClassName="pb-4"
         >
-          <View className="items-center mb-5">
+          <View className="mb-5 items-center">
             <View className="flex-row gap-4">
               {iconsMap.map((user, index) => (
                 <Avatar
@@ -101,10 +101,10 @@ export function TriggerNewFamilyBottomSheet() {
             </View>
           </View>
           <View className="mb-6 items-center">
-            <BottomSheet.Title className="text-center text-2xl font-bold text-text-day dark:text-text-night">
+            <BottomSheet.Title className="text-text-day dark:text-text-night text-center text-2xl font-bold">
               🔍 No family group found.
             </BottomSheet.Title>
-            <BottomSheet.Description className="text-center text-lg text-hint">
+            <BottomSheet.Description className="text-hint text-center text-lg">
               Create a new one or join with a code.
             </BottomSheet.Description>
           </View>
@@ -114,14 +114,14 @@ export function TriggerNewFamilyBottomSheet() {
             onValueChange={(v) =>
               setSelectedOption((v ?? null) as FamilyOption)
             }
-            className="gap-3 mb-6"
+            className="mb-6 gap-3"
           >
             {familyOptions.map((opt) => (
               <RadioGroup.Item key={opt.value} value={opt.value}>
                 {({ isSelected }) => (
                   <View
                     className={cn(
-                      "flex-row items-center gap-3 rounded-2xl px-4 py-3 bg-transparent-day border-2",
+                      "bg-transparent-day flex-row items-center gap-3 rounded-2xl border-2 px-4 py-3",
                       isSelected ? "border-main" : "border-transparent"
                     )}
                   >
@@ -129,10 +129,10 @@ export function TriggerNewFamilyBottomSheet() {
                       {opt.icon}
                     </View>
                     <View className="flex-1">
-                      <RadioGroup.Label className="text-base font-semibold text-text-day dark:text-text-night">
+                      <RadioGroup.Label className="text-text-day dark:text-text-night text-base font-semibold">
                         {opt.label}
                       </RadioGroup.Label>
-                      <RadioGroup.Description className="text-sm text-hint">
+                      <RadioGroup.Description className="text-hint text-sm">
                         {opt.description}
                       </RadioGroup.Description>
                     </View>
@@ -143,7 +143,7 @@ export function TriggerNewFamilyBottomSheet() {
           </RadioGroup>
 
           <CustomButton
-            className="px-6 rounded-2xl"
+            className="rounded-2xl px-6"
             isDisabled={selectedOption == null}
             onPress={handleNext}
           >

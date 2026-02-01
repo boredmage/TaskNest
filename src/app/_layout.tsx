@@ -1,16 +1,16 @@
-import "../../global.css";
-import { HeroUINativeProvider } from "heroui-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { AppThemeProvider } from "@/contexts/app-theme-context";
+import "@/i18n";
+import i18n from "@/i18n";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Slot } from "expo-router";
+import { HeroUINativeProvider } from "heroui-native";
+import { useCallback, useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   KeyboardAvoidingView,
   KeyboardProvider,
 } from "react-native-keyboard-controller";
-import { useCallback, useEffect } from "react";
-import "@/i18n";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import i18n from "@/i18n";
-import { AppThemeProvider } from "@/contexts/app-theme-context";
+import "../../global.css";
 
 const AppContent = () => {
   const contentWrapper = useCallback(

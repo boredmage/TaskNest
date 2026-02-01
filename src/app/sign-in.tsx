@@ -1,12 +1,12 @@
-import React from "react";
-import { View, Text, Image } from "react-native";
 import { useRouter } from "expo-router";
+import React from "react";
+import { Image, Text, View } from "react-native";
 
 import { CustomButton } from "@/components/custom-button";
 import AppleIcon from "@/components/icons/apple-icon";
 import GoogleIcon from "@/components/icons/google-icon";
-import { Button } from "heroui-native";
 import XIcon from "@/components/icons/x-icon";
+import { Button } from "heroui-native";
 
 const SignIn = () => {
   const router = useRouter();
@@ -30,25 +30,25 @@ const SignIn = () => {
   };
 
   return (
-    <View className="flex-1 bg-main">
+    <View className="bg-main flex-1">
       <View className="flex-1 justify-center p-4">
         <View className="relative">
           {/* Decorative background pills, positioned relative to form */}
           <Image
             source={require("@/assets/pill.png")}
-            className="absolute -top-20 -left-20 w-56 h-56"
+            className="absolute -top-20 -left-20 h-56 w-56"
           />
           <Image
             source={require("@/assets/pill.png")}
-            className="absolute -bottom-28 -right-24 w-64 h-64"
+            className="absolute -right-24 -bottom-28 h-64 w-64"
           />
 
-          <View className="bg-white rounded-4xl px-6 py-8 shadow-sm z-10">
+          <View className="z-10 rounded-4xl bg-white px-6 py-8 shadow-sm">
             {/* Close button */}
-            <View className="items-end mb-4">
+            <View className="mb-4 items-end">
               <Button
                 onPress={handleClose}
-                className="w-8 h-8 rounded-full"
+                className="h-8 w-8 rounded-full"
                 accessibilityLabel="Close"
                 variant="tertiary"
               >
@@ -58,10 +58,10 @@ const SignIn = () => {
 
             {/* Heading */}
             <View className="mb-6">
-              <Text className="text-2xl font-semibold mb-2">
+              <Text className="mb-2 text-2xl font-semibold">
                 Welcome to TaskNest!
               </Text>
-              <Text className="text-base text-hint leading-snug">
+              <Text className="text-hint text-base leading-snug">
                 Create tasks, share responsibilities, and keep your family life
                 running smoothly — all in one place.
               </Text>
@@ -69,7 +69,7 @@ const SignIn = () => {
 
             {/* Primary sign-in button */}
             <CustomButton
-              className="w-full bg-black mt-1"
+              className="mt-1 w-full bg-black"
               labelClassName="text-white"
               onPress={handleEmailSignIn}
             >
@@ -79,14 +79,14 @@ const SignIn = () => {
             {/* Continue with email */}
             <Button
               variant="tertiary"
-              className="w-full mt-3 rounded-xl"
+              className="mt-3 w-full rounded-xl"
               onPress={handleEmailSignIn}
             >
               Continue with Email
             </Button>
 
             {/* Social sign-in options */}
-            <View className="flex-row gap-3 mt-4">
+            <View className="mt-4 flex-row gap-3">
               <Button
                 variant="tertiary"
                 className="flex-1 rounded-xl"

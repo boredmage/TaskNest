@@ -1,10 +1,10 @@
-import React from "react";
-import { View, TouchableOpacity, Text } from "react-native";
-import Arrow from "../components/icons/arrow";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter, useLocalSearchParams, useSegments } from "expo-router";
-import { cn } from "heroui-native";
 import { useAppTheme } from "@/contexts/app-theme-context";
+import { useLocalSearchParams, useRouter, useSegments } from "expo-router";
+import { cn } from "heroui-native";
+import React from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Arrow from "../components/icons/arrow";
 
 export default function WithArrowBack({
   children,
@@ -41,7 +41,7 @@ export default function WithArrowBack({
         <View className="flex-row py-2!">
           <View className="flex-1">
             <TouchableOpacity
-              className="justify-center flex-1"
+              className="flex-1 justify-center"
               onPress={handleBack}
             >
               <Arrow
@@ -52,7 +52,7 @@ export default function WithArrowBack({
             </TouchableOpacity>
           </View>
           <View className="flex-1">
-            <Text className="text-xl font-semibold text-center text-text-day dark:text-text-night">
+            <Text className="text-text-day dark:text-text-night text-center text-xl font-semibold">
               {title}
             </Text>
           </View>

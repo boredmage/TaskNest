@@ -1,11 +1,11 @@
 import * as React from "react";
 import Svg, {
-  G,
-  Path,
-  Defs,
-  LinearGradient,
-  Stop,
   ClipPath,
+  Defs,
+  G,
+  LinearGradient,
+  Path,
+  Stop,
   SvgProps,
 } from "react-native-svg";
 const YellowBell = (props: SvgProps) => (

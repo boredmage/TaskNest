@@ -1,19 +1,19 @@
+import { useAppTheme } from "@/contexts/app-theme-context";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import * as Haptics from "expo-haptics";
 import React from "react";
 import { Dimensions, Text, TouchableOpacity, View } from "react-native";
-import Svg, { Path } from "react-native-svg";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import * as Haptics from "expo-haptics";
-import HomeIcon from "./icons/home";
-import SettingsIcon from "./icons/settings";
-import TasksIcon from "./icons/file";
+import Svg, { Path } from "react-native-svg";
 import NewsIcon from "./icons/bell";
+import TasksIcon from "./icons/file";
+import HomeIcon from "./icons/home";
 import PlusIcon from "./icons/plus";
-import { useAppTheme } from "@/contexts/app-theme-context";
+import SettingsIcon from "./icons/settings";
 
 const ACTIVE_COLOR = "#72D000";
 const INACTIVE_COLOR = "#A0A0A0";
@@ -43,7 +43,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   }));
 
   return (
-    <View pointerEvents="box-none" className="absolute left-0 right-0 bottom-0">
+    <View pointerEvents="box-none" className="absolute right-0 bottom-0 left-0">
       {/* Bottom bar with curved notch */}
       <View
         style={{
@@ -53,7 +53,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
           shadowRadius: 20,
           shadowOpacity: 0.1,
         }}
-        className="overflow-hidden w-full items-end justify-center rounded-t-lg"
+        className="w-full items-end justify-center overflow-hidden rounded-t-lg"
       >
         <Svg
           width="100%"
@@ -71,9 +71,9 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
           />
         </Svg>
 
-        <View className="flex-row items-center justify-between pb-5 gap-4">
+        <View className="flex-row items-center justify-between gap-4 pb-5">
           {/* Left two tabs */}
-          <View className="flex-row flex-1 items-center">
+          <View className="flex-1 flex-row items-center">
             {state.routes.slice(0, 2).map((route, index) => {
               if (["_sitemap", "+not-found"].includes(route.name)) return null;
 
@@ -109,7 +109,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
                   testID={options.tabBarButtonTestID}
                   onPress={onPress}
                   activeOpacity={0.8}
-                  className="items-center justify-center gap-1.5 flex-1"
+                  className="flex-1 items-center justify-center gap-1.5"
                 >
                   <IconComponent
                     width={22}
@@ -133,7 +133,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
           <View className="w-14" />
 
           {/* Right two tabs */}
-          <View className="flex-row flex-1 items-center">
+          <View className="flex-1 flex-row items-center">
             {state.routes.slice(-2).map((route, index) => {
               if (["_sitemap", "+not-found"].includes(route.name)) return null;
 
@@ -169,7 +169,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
                   testID={options.tabBarButtonTestID}
                   onPress={onPress}
                   activeOpacity={0.8}
-                  className="items-center justify-center gap-1.5 flex-1"
+                  className="flex-1 items-center justify-center gap-1.5"
                 >
                   <IconComponent
                     width={22}
@@ -193,7 +193,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
 
       {/* Floating center plus button */}
       <Animated.View
-        className="absolute self-center top-0"
+        className="absolute top-0 self-center"
         style={fabAnimatedStyle}
       >
         <TouchableOpacity
@@ -209,7 +209,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
             navigation.navigate("new-task");
           }}
         >
-          <View className="w-14 h-14 rounded-full bg-main items-center justify-center">
+          <View className="bg-main h-14 w-14 items-center justify-center rounded-full">
             <PlusIcon width={22} height={22} />
           </View>
         </TouchableOpacity>

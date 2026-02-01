@@ -1,21 +1,21 @@
-import { View, Text, FlatList } from "react-native";
-import React from "react";
-import WithArrowBack from "@/layout/with-arrow-back";
 import ActivityCard from "@/components/activity-card";
 import TrophyIcon from "@/components/icons/trophy-icon";
+import WithArrowBack from "@/layout/with-arrow-back";
 import { getRandomActivities } from "@/mock-data";
 import { StatusEnum } from "@/type";
+import React from "react";
+import { FlatList, Text, View } from "react-native";
 
 function EmptyCompleted() {
   return (
     <View className="flex-1 items-center justify-center gap-2.5 py-12">
-      <View className="bg-main rounded-lg p-2 items-center justify-center size-10">
+      <View className="bg-main size-10 items-center justify-center rounded-lg p-2">
         <TrophyIcon width={20} height={20} />
       </View>
-      <Text className="text-2xl font-semibold text-text-day">
+      <Text className="text-text-day text-2xl font-semibold">
         No Completed Tasks
       </Text>
-      <Text className="text-center max-w-xs text-hint text-base leading-0">
+      <Text className="text-hint max-w-xs text-center text-base leading-0">
         You haven't completed any tasks yet. Keep going—completed tasks will
         show up here.
       </Text>

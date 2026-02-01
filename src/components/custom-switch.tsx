@@ -1,6 +1,6 @@
-import { Switch } from "heroui-native";
-import type { SwitchProps } from "heroui-native";
 import { useAppTheme } from "@/contexts/app-theme-context";
+import type { SwitchProps } from "heroui-native";
+import { Switch } from "heroui-native";
 
 interface CustomSwitchProps extends Omit<
   SwitchProps,
@@ -51,7 +51,7 @@ export function CustomSwitch({
       {...props}
     >
       <Switch.Thumb
-        className={`${sizeConfig.thumb} bg-white rounded-full`}
+        className={`${sizeConfig.thumb} rounded-full bg-white`}
         animation={{
           left: {
             value: sizeConfig.left,

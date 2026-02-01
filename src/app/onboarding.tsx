@@ -1,6 +1,6 @@
-import { Text, View, Image, Dimensions } from "react-native";
-import { useEffect, useState, useRef } from "react";
 import { Link, useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
+import { Dimensions, Image, Text, View } from "react-native";
 import Animated, {
   Easing,
   Extrapolation,
@@ -13,13 +13,13 @@ import Carousel, {
   ICarouselInstance,
   Pagination,
 } from "react-native-reanimated-carousel";
-import { CustomButton } from "../components/custom-button";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { CustomButton } from "../components/custom-button";
 
 import AppleIcon from "@/components/icons/apple-icon";
 import GoogleIcon from "@/components/icons/google-icon";
-import { Button } from "heroui-native";
 import XIcon from "@/components/icons/x-icon";
+import { Button } from "heroui-native";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -241,7 +241,7 @@ export default function Onboarding() {
 
   return (
     <View
-      className="flex-1 bg-main p-4 py-6 relative"
+      className="bg-main relative flex-1 p-4 py-6"
       onLayout={(e) => {
         const { width, height } = e.nativeEvent.layout;
         setContainerSize({ width, height });
@@ -265,7 +265,7 @@ export default function Onboarding() {
         <Image
           source={require("@/assets/pill.png")}
           resizeMode="contain"
-          className="w-full h-full"
+          className="h-full w-full"
         />
       </Animated.View>
 
@@ -286,12 +286,12 @@ export default function Onboarding() {
         <Image
           source={require("@/assets/pill.png")}
           resizeMode="contain"
-          className="w-full h-full"
+          className="h-full w-full"
         />
       </Animated.View>
 
       <View
-        className="flex-1 justify-center relative"
+        className="relative flex-1 justify-center"
         onLayout={(e) => {
           const { x, y, width, height } = e.nativeEvent.layout;
           setCarouselLayout({ x, y, width, height });
@@ -316,10 +316,10 @@ export default function Onboarding() {
       <Animated.View
         pointerEvents={completedSteps ? "none" : "auto"}
         style={[onboardingCardAnimStyle]}
-        className="w-full bg-background-day dark:bg-background-night rounded-4xl px-4 py-10 relative"
+        className="bg-background-day dark:bg-background-night relative w-full rounded-4xl px-4 py-10"
       >
         <SafeAreaView edges={[]} className="flex-1">
-          <View className="items-start justify-start flex-row">
+          <View className="flex-row items-start justify-start">
             <Pagination.Custom
               progress={progress}
               data={steps}
@@ -363,11 +363,11 @@ export default function Onboarding() {
               }}
             />
           </View>
-          <View className="gap-2 my-6">
-            <Text className="text-xl font-semibold text-text-day dark:text-text-night leading-tight">
+          <View className="my-6 gap-2">
+            <Text className="text-text-day dark:text-text-night text-xl leading-tight font-semibold">
               {currentStepData.title}
             </Text>
-            <Text className="text-base text-text-day dark:text-text-night leading-tight">
+            <Text className="text-text-day dark:text-text-night text-base leading-tight">
               {currentStepData.description}
             </Text>
           </View>
@@ -399,17 +399,17 @@ export default function Onboarding() {
         ]}
       >
         <View
-          className="bg-white rounded-4xl px-6 py-8 shadow-sm z-10 opacity-100"
+          className="z-10 rounded-4xl bg-white px-6 py-8 opacity-100 shadow-sm"
           onLayout={(e) => {
             const { height } = e.nativeEvent.layout;
             setSignInCardHeight(height);
           }}
         >
           {/* Close button */}
-          <View className="items-end mb-4">
+          <View className="mb-4 items-end">
             <Button
               onPress={handleClose}
-              className="w-8 h-8 rounded-full"
+              className="h-8 w-8 rounded-full"
               accessibilityLabel="Close"
               variant="tertiary"
             >
@@ -419,10 +419,10 @@ export default function Onboarding() {
 
           {/* Heading */}
           <View className="mb-6">
-            <Text className="text-2xl font-semibold mb-2">
+            <Text className="mb-2 text-2xl font-semibold">
               Welcome to TaskNest!
             </Text>
-            <Text className="text-base text-hint leading-snug">
+            <Text className="text-hint text-base leading-snug">
               Create tasks, share responsibilities, and keep your family life
               running smoothly — all in one place.
             </Text>
@@ -431,7 +431,7 @@ export default function Onboarding() {
           {/* Primary sign-in button */}
           <Link href="/auth/sign-in" asChild>
             <CustomButton
-              className="w-full bg-black mt-1"
+              className="mt-1 w-full bg-black"
               labelClassName="text-white"
               onPress={handleEmailSignIn}
             >
@@ -443,7 +443,7 @@ export default function Onboarding() {
           <Link href="/auth/email-auth" asChild>
             <Button
               variant="tertiary"
-              className="w-full mt-3 rounded-xl"
+              className="mt-3 w-full rounded-xl"
               onPress={handleEmailSignIn}
             >
               Continue with Email
@@ -451,7 +451,7 @@ export default function Onboarding() {
           </Link>
 
           {/* Social sign-in options */}
-          <View className="flex-row gap-3 mt-4">
+          <View className="mt-4 flex-row gap-3">
             <Button
               variant="tertiary"
               className="flex-1 rounded-xl"

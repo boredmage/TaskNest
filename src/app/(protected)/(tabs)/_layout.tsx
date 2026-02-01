@@ -1,8 +1,8 @@
-import React from "react";
-import { Tabs } from "expo-router";
-import { View, Text } from "react-native";
 import TabBar from "@/components/tab-bar";
+import { Tabs } from "expo-router";
+import React from "react";
 import { useTranslation } from "react-i18next";
+import { Text, View } from "react-native";
 
 function TabLabel({ label }: { label: string }) {
   return (

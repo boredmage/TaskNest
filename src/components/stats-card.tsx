@@ -1,14 +1,14 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import React from "react";
 import { Link } from "expo-router";
+import React from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 
 import { StatusEnum as Status } from "@/type";
+import { useTranslation } from "react-i18next";
+import { SvgProps } from "react-native-svg";
+import ArchiveIcon from "./icons/archive-icon";
+import ClockIcon from "./icons/clock-icon";
 import FileIcon from "./icons/file-icon";
 import TrophyIcon from "./icons/trophy-icon";
-import ClockIcon from "./icons/clock-icon";
-import ArchiveIcon from "./icons/archive-icon";
-import { SvgProps } from "react-native-svg";
-import { useTranslation } from "react-i18next";
 
 const statusIconMap: Record<
   Status,
@@ -53,7 +53,7 @@ const StatsCard = ({ type, value }: { type: Status; value: number }) => {
     <Link href={`/${statusIconMap[type].route}`} asChild>
       <TouchableOpacity
         activeOpacity={0.85}
-        className="bg-primary-day dark:bg-primary-night rounded-xl p-4 flex-1 gap-4"
+        className="bg-primary-day dark:bg-primary-night flex-1 gap-4 rounded-xl p-4"
       >
         <View className="flex-row items-start justify-between gap-2">
           <View

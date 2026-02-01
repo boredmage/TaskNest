@@ -1,11 +1,9 @@
-import { View, Text, Pressable, TouchableOpacity } from "react-native";
-import React from "react";
-import { cn, InputOTP, TextField } from "heroui-native";
-import { useState } from "react";
+import { CustomButton } from "@/components/custom-button";
 import Eye from "@/components/icons/eye";
 import EyeSlash from "@/components/icons/eye-slash";
-import { CustomButton } from "@/components/custom-button";
-import { Link } from "expo-router";
+import { cn, InputOTP, TextField } from "heroui-native";
+import React, { useState } from "react";
+import { Pressable, Text, View } from "react-native";
 
 const steps = [
   {
@@ -63,7 +61,7 @@ const ResetPassword = () => {
     <View className="flex-1">
       <View className="mb-6">
         <Text className="text-2xl font-semibold">{currentStepData.title}</Text>
-        <Text className="text-base text-hint">
+        <Text className="text-hint text-base">
           {currentStepData.description}
         </Text>
       </View>
@@ -154,8 +152,8 @@ const ResetPassword = () => {
 
       {/* Resend code - only show on step 1 */}
       {currentStep === 1 && (
-        <View className="flex-row justify-start items-center">
-          <View className="flex-row justify-center mt-4 gap-2">
+        <View className="flex-row items-center justify-start">
+          <View className="mt-4 flex-row justify-center gap-2">
             <Text className="text-hint text-base">Didn't receive OTP?</Text>
             <Text className="text-main text-base font-medium underline">
               Resend code

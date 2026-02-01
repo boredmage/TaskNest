@@ -1,21 +1,21 @@
-import { View, Text, FlatList } from "react-native";
-import React from "react";
-import WithArrowBack from "@/layout/with-arrow-back";
 import ActivityCard from "@/components/activity-card";
 import ClockIcon from "@/components/icons/clock-icon";
+import WithArrowBack from "@/layout/with-arrow-back";
 import { getRandomActivities } from "@/mock-data";
 import { StatusEnum } from "@/type";
+import React from "react";
+import { FlatList, Text, View } from "react-native";
 
 function EmptyOverdue() {
   return (
     <View className="flex-1 items-center justify-center gap-2.5 py-12">
-      <View className="bg-[#FF5050] rounded-lg p-2 items-center justify-center size-10">
+      <View className="size-10 items-center justify-center rounded-lg bg-[#FF5050] p-2">
         <ClockIcon width={20} height={20} />
       </View>
-      <Text className="text-2xl font-semibold text-text-day">
+      <Text className="text-text-day text-2xl font-semibold">
         Nothing&apos;s Overdue
       </Text>
-      <Text className="text-center max-w-64 text-hint text-base leading-0">
+      <Text className="text-hint max-w-64 text-center text-base leading-0">
         Great job! You have no overdue tasks at the moment.
       </Text>
     </View>

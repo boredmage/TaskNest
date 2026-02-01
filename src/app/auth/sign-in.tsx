@@ -1,11 +1,10 @@
-import { View, Text, Pressable, TouchableOpacity } from "react-native";
-import React from "react";
-import { TextField } from "heroui-native";
-import { useState } from "react";
+import { CustomButton } from "@/components/custom-button";
 import Eye from "@/components/icons/eye";
 import EyeSlash from "@/components/icons/eye-slash";
-import { CustomButton } from "@/components/custom-button";
 import { Link } from "expo-router";
+import { TextField } from "heroui-native";
+import React, { useState } from "react";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -16,7 +15,7 @@ const SignIn = () => {
     <View className="flex-1">
       <View className="mb-6">
         <Text className="text-2xl font-semibold">Sign in</Text>
-        <Text className="text-base text-hint">
+        <Text className="text-hint text-base">
           Enter your email & password to sign in.
         </Text>
       </View>
@@ -29,7 +28,7 @@ const SignIn = () => {
             autoCapitalize="none"
             value={email}
             onChangeText={setEmail}
-            className="rounded-xl bg-transparent-day border-0 shadow-none h-12 text-base leading-tight"
+            className="bg-transparent-day h-12 rounded-xl border-0 text-base leading-tight shadow-none"
           />
         </TextField>
 
@@ -38,7 +37,7 @@ const SignIn = () => {
             <TextField.Input
               value={password}
               onChangeText={setPassword}
-              className="flex-1 pr-10 rounded-xl bg-transparent-day border-0 shadow-none h-12 text-base leading-tight"
+              className="bg-transparent-day h-12 flex-1 rounded-xl border-0 pr-10 text-base leading-tight shadow-none"
               placeholder="Password"
               secureTextEntry={!isPasswordVisible}
             />
@@ -52,7 +51,7 @@ const SignIn = () => {
         </TextField>
       </View>
 
-      <View className="flex-row justify-end items-center mt-4">
+      <View className="mt-4 flex-row items-center justify-end">
         <Link href="/auth/reset-password" asChild>
           <TouchableOpacity>
             <Text className="text-main text-base font-medium">
@@ -62,7 +61,7 @@ const SignIn = () => {
         </Link>
       </View>
 
-      <View className="flex-col gap-8 mt-auto">
+      <View className="mt-auto flex-col gap-8">
         <View className="flex-row justify-center gap-2">
           <Text className="text-hint text-base">Don't have an account?</Text>
           <Text className="text-main text-base font-medium">Sign up</Text>

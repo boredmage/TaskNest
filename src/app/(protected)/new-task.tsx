@@ -2,16 +2,16 @@ import { CustomButton } from "@/components/custom-button";
 import ChevronRight from "@/components/icons/chevron-right";
 import WithArrowBack from "@/layout/with-arrow-back";
 import { Select } from "heroui-native";
-import { View, Text } from "react-native";
+import { Text, View } from "react-native";
 
 const NewTask = () => {
   return (
     <WithArrowBack title="New Task">
-      <View className="gap-4 mt-10">
+      <View className="mt-10 gap-4">
         <Select>
-          <Select.Trigger className="rounded-xl bg-transparent-day border-0 shadow-none h-12 text-base leading-tight flex-row items-center justify-between p-3">
+          <Select.Trigger className="bg-transparent-day h-12 flex-row items-center justify-between rounded-xl border-0 p-3 text-base leading-tight shadow-none">
             <View className="flex-row items-center">
-              <Text className="text-base text-text-day">Category</Text>
+              <Text className="text-text-day text-base">Category</Text>
             </View>
 
             <View className="flex-row items-center gap-2">

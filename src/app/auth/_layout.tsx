@@ -1,8 +1,8 @@
-import React from "react";
+import Arrow from "@/components/icons/arrow";
 import { Slot, useRouter } from "expo-router";
+import React from "react";
 import { TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Arrow from "@/components/icons/arrow";
 
 export default function AuthLayout() {
   const router = useRouter();

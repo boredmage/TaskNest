@@ -1,9 +1,9 @@
-import { View, Text, Pressable, Image } from "react-native";
-import { cn } from "heroui-native";
-import WithArrowBack from "@/layout/with-arrow-back";
-import { useTranslation } from "react-i18next";
 import Check from "@/components/icons/check";
+import WithArrowBack from "@/layout/with-arrow-back";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { cn } from "heroui-native";
+import { useTranslation } from "react-i18next";
+import { Image, Pressable, Text, View } from "react-native";
 
 // PNG URLs (React Native Image does not load SVG from URI on iOS/Android)
 const FLAG_ICONS = {
@@ -32,12 +32,12 @@ const LanguageRow = ({
       <View className="flex-row items-center">
         <Image
           source={{ uri: flagUri }}
-          className="w-20 h-12 rounded-md overflow-hidden"
+          className="h-12 w-20 overflow-hidden rounded-md"
           resizeMode="cover"
         />
         <Text
           className={cn(
-            "flex-1 ml-3 text-base text-text-day dark:text-text-night",
+            "text-text-day dark:text-text-night ml-3 flex-1 text-base",
             isSelected && "font-semibold"
           )}
         >
@@ -60,7 +60,7 @@ const Language = () => {
 
   return (
     <WithArrowBack title={t("settings.language")}>
-      <View className="flex-1 mt-10">
+      <View className="mt-10 flex-1">
         <View className="gap-2">
           <LanguageRow
             language="English"
