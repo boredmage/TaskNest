@@ -1,21 +1,23 @@
-import { StatusBar } from "expo-status-bar";
-import { Text, useColorScheme, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useTranslation } from "react-i18next";
-import { TriggerNewFamilyBottomSheet } from "@/components/bottom-sheet/trigger-new-family-bottom-sheet";
+import { Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
+import { TriggerNewFamilyBottomSheet } from '@/components/bottom-sheet/trigger-new-family-bottom-sheet';
+import { useAppTheme } from '@/contexts/app-theme-context';
 
 const Family = () => {
   const { t } = useTranslation();
-  const isDarkMode = useColorScheme() === 'dark';
+  const { isDark } = useAppTheme();
 
   return (
-    <SafeAreaView style={{
-      flex: 1,
-      backgroundColor: isDarkMode ? '#222222' : '#F2F2F2',
-    }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: isDark ? '#222222' : '#F2F2F2',
+      }}
+    >
       <View className="flex-1 px-4 gap-4">
         <Text className="text-2xl font-semibold text-text-day dark:text-text-night self-center">
-          {t("tabs.family")}
+          {t('tabs.family')}
         </Text>
 
         <View className="flex-1 items-center justify-center gap-2.5 pb-20">
@@ -30,7 +32,6 @@ const Family = () => {
           <TriggerNewFamilyBottomSheet />
         </View>
       </View>
-      <StatusBar style="dark" />
     </SafeAreaView>
   );
 };

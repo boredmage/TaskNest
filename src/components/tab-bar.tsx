@@ -1,23 +1,24 @@
-import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import React from "react";
-import { Dimensions, Platform, Text, TouchableOpacity, useColorScheme, View } from "react-native";
-import Svg, { Path } from "react-native-svg";
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import React from 'react';
+import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from "react-native-reanimated";
-import * as Haptics from "expo-haptics";
-import HomeIcon from "./icons/home";
-import SettingsIcon from "./icons/settings";
-import TasksIcon from "./icons/file";
-import NewsIcon from "./icons/bell";
-import PlusIcon from "./icons/plus";
+} from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
+import HomeIcon from './icons/home';
+import SettingsIcon from './icons/settings';
+import TasksIcon from './icons/file';
+import NewsIcon from './icons/bell';
+import PlusIcon from './icons/plus';
+import { useAppTheme } from '@/contexts/app-theme-context';
 
-const ACTIVE_COLOR = "#72D000";
-const INACTIVE_COLOR = "#A0A0A0";
+const ACTIVE_COLOR = '#72D000';
+const INACTIVE_COLOR = '#A0A0A0';
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const BAR_HEIGHT = 50;
 const NOTCH_RADIUS = 40;
 
@@ -30,14 +31,11 @@ const icons = {
 
 const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   const fabScale = useSharedValue(1);
-  const isDarkMode = useColorScheme() === 'dark';
+  const { isDark } = useAppTheme();
 
   const fabAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateY: -NOTCH_RADIUS + 10 },
-      { scale: fabScale.value },
-    ],
-    shadowColor: "#000",
+    transform: [{ translateY: -NOTCH_RADIUS + 10 }, { scale: fabScale.value }],
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
     shadowRadius: 12,
     shadowOpacity: 0.25,
@@ -45,15 +43,12 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   }));
 
   return (
-    <View
-      pointerEvents="box-none"
-      className="absolute left-0 right-0 bottom-0"
-    >
+    <View pointerEvents="box-none" className="absolute left-0 right-0 bottom-0">
       {/* Bottom bar with curved notch */}
       <View
         style={{
           height: BAR_HEIGHT + NOTCH_RADIUS,
-          shadowColor: "#000",
+          shadowColor: '#000',
           shadowOffset: { width: 0, height: 10 },
           shadowRadius: 20,
           shadowOpacity: 0.1,
@@ -64,39 +59,35 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
           width="100%"
           height={BAR_HEIGHT + NOTCH_RADIUS}
           style={{
-            position: "absolute",
+            position: 'absolute',
             top: 0,
             left: 0,
           }}
         >
           <Path
-            fill={isDarkMode ? '#3C3C3C' : '#FFFFFF'}
+            fill={isDark ? '#3C3C3C' : '#FFFFFF'}
             fillRule="evenodd"
             d={createNotchedPath(SCREEN_WIDTH, BAR_HEIGHT, NOTCH_RADIUS)}
           />
         </Svg>
 
-        <View
-          className="flex-row items-center justify-between pb-5 gap-4"
-        >
+        <View className="flex-row items-center justify-between pb-5 gap-4">
           {/* Left two tabs */}
-          <View
-            className="flex-row flex-1 items-center"
-          >
+          <View className="flex-row flex-1 items-center">
             {state.routes.slice(0, 2).map((route, index) => {
-              if (["_sitemap", "+not-found"].includes(route.name)) return null;
+              if (['_sitemap', '+not-found'].includes(route.name)) return null;
 
               const { options } = descriptors[route.key];
               const label =
-                typeof options.tabBarLabel === "string"
+                typeof options.tabBarLabel === 'string'
                   ? options.tabBarLabel
-                  : options.title ?? route.name;
+                  : (options.title ?? route.name);
 
               const isFocused = state.index === state.routes.indexOf(route);
 
               const onPress = () => {
                 const event = navigation.emit({
-                  type: "tabPress",
+                  type: 'tabPress',
                   target: route.key,
                   canPreventDefault: true,
                 });
@@ -142,23 +133,21 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
           <View className="w-14" />
 
           {/* Right two tabs */}
-          <View
-            className="flex-row flex-1 items-center"
-          >
+          <View className="flex-row flex-1 items-center">
             {state.routes.slice(-2).map((route, index) => {
-              if (["_sitemap", "+not-found"].includes(route.name)) return null;
+              if (['_sitemap', '+not-found'].includes(route.name)) return null;
 
               const { options } = descriptors[route.key];
               const label =
-                typeof options.tabBarLabel === "string"
+                typeof options.tabBarLabel === 'string'
                   ? options.tabBarLabel
-                  : options.title ?? route.name;
+                  : (options.title ?? route.name);
 
               const isFocused = state.index === state.routes.indexOf(route);
 
               const onPress = () => {
                 const event = navigation.emit({
-                  type: "tabPress",
+                  type: 'tabPress',
                   target: route.key,
                   canPreventDefault: true,
                 });
@@ -203,7 +192,10 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
       </View>
 
       {/* Floating center plus button */}
-      <Animated.View className="absolute self-center top-0" style={fabAnimatedStyle}>
+      <Animated.View
+        className="absolute self-center top-0"
+        style={fabAnimatedStyle}
+      >
         <TouchableOpacity
           activeOpacity={0.9}
           onPressIn={() => {
@@ -214,7 +206,7 @@ const TabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
             fabScale.value = withTiming(1, { duration: 120 });
           }}
           onPress={() => {
-            navigation.navigate("new-task");
+            navigation.navigate('new-task');
           }}
         >
           <View className="w-14 h-14 rounded-full bg-main items-center justify-center">
@@ -243,8 +235,7 @@ function createNotchedPath(width: number, barHeight: number, radius: number) {
     `m${-r},0`,
     `a${r},${r} 0 1,0 ${2 * r},0`,
     `a${r},${r} 0 1,0 ${-2 * r},0`,
-  ].join(" ");
+  ].join(' ');
 
   return `${rect} ${circle}`;
 }
-

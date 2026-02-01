@@ -1,13 +1,12 @@
-import React from "react";
-import { View, Text, Image } from "react-native";
-import { StatusBar } from "expo-status-bar";
-import { useRouter } from "expo-router";
+import React from 'react';
+import { View, Text, Image } from 'react-native';
+import { useRouter } from 'expo-router';
 
-import { CustomButton } from "@/components/custom-button";
-import AppleIcon from "@/components/icons/apple-icon";
-import GoogleIcon from "@/components/icons/google-icon";
-import { Button } from "heroui-native";
-import XIcon from "@/components/icons/x-icon";
+import { CustomButton } from '@/components/custom-button';
+import AppleIcon from '@/components/icons/apple-icon';
+import GoogleIcon from '@/components/icons/google-icon';
+import { Button } from 'heroui-native';
+import XIcon from '@/components/icons/x-icon';
 
 const SignIn = () => {
   const router = useRouter();
@@ -36,11 +35,11 @@ const SignIn = () => {
         <View className="relative">
           {/* Decorative background pills, positioned relative to form */}
           <Image
-            source={require("@/assets/pill.png")}
+            source={require('@/assets/pill.png')}
             className="absolute -top-20 -left-20 w-56 h-56"
           />
           <Image
-            source={require("@/assets/pill.png")}
+            source={require('@/assets/pill.png')}
             className="absolute -bottom-28 -right-24 w-64 h-64"
           />
 
@@ -59,10 +58,12 @@ const SignIn = () => {
 
             {/* Heading */}
             <View className="mb-6">
-              <Text className="text-2xl font-semibold mb-2">Welcome to TaskNest!</Text>
+              <Text className="text-2xl font-semibold mb-2">
+                Welcome to TaskNest!
+              </Text>
               <Text className="text-base text-hint leading-snug">
-                Create tasks, share responsibilities, and keep your family life running smoothly —
-                all in one place.
+                Create tasks, share responsibilities, and keep your family life
+                running smoothly — all in one place.
               </Text>
             </View>
 
@@ -81,7 +82,6 @@ const SignIn = () => {
               className="w-full mt-3 rounded-xl"
               onPress={handleEmailSignIn}
             >
-
               Continue with Email
             </Button>
 

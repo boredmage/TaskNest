@@ -1,7 +1,6 @@
-import { StatusBar } from "expo-status-bar";
-import { Text, View, Image, Dimensions } from "react-native";
-import { useEffect, useState, useRef } from "react";
-import { Link, useRouter } from "expo-router";
+import { Text, View, Image, Dimensions } from 'react-native';
+import { useEffect, useState, useRef } from 'react';
+import { Link, useRouter } from 'expo-router';
 import Animated, {
   Easing,
   Extrapolation,
@@ -9,18 +8,18 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 import Carousel, {
   ICarouselInstance,
   Pagination,
-} from "react-native-reanimated-carousel";
+} from 'react-native-reanimated-carousel';
 import { CustomButton } from '../components/custom-button';
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import AppleIcon from "@/components/icons/apple-icon";
-import GoogleIcon from "@/components/icons/google-icon";
-import { Button } from "heroui-native";
-import XIcon from "@/components/icons/x-icon";
+import AppleIcon from '@/components/icons/apple-icon';
+import GoogleIcon from '@/components/icons/google-icon';
+import { Button } from 'heroui-native';
+import XIcon from '@/components/icons/x-icon';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -31,7 +30,8 @@ const slide3 = require('../assets/pill.png');
 const steps = [
   {
     title: 'Organize as a Family',
-    description: 'Assign chores and stay on the same page — your family, working as one team.',
+    description:
+      'Assign chores and stay on the same page — your family, working as one team.',
     image: slide1,
   },
   {
@@ -44,7 +44,7 @@ const steps = [
     description: 'Groceries, events, and plans — manage it all in one app.',
     image: slide3,
   },
-]
+];
 
 export default function Onboarding() {
   const router = useRouter();
@@ -55,7 +55,12 @@ export default function Onboarding() {
   const currentStepData = steps[currentStep];
   const isLastStep = currentStep === steps.length - 1;
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
-  const [carouselLayout, setCarouselLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  const [carouselLayout, setCarouselLayout] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
   const [signInCardHeight, setSignInCardHeight] = useState(0);
 
   const PILL_1_SIZE = 256; // w-56
@@ -87,18 +92,24 @@ export default function Onboarding() {
     // When the modal is NOT shown, the pills should be centered on the carousel container.
     const carouselCenterX = carouselLayout.x + carouselLayout.width / 2;
     const carouselCenterY = carouselLayout.y + carouselLayout.height / 2;
-    const baseOffsetX = carouselLayout.width && carouselLayout.height ? (carouselCenterX - rootCenterX) : 0;
-    const baseOffsetY = carouselLayout.width && carouselLayout.height ? (carouselCenterY - rootCenterY) : 0;
+    const baseOffsetX =
+      carouselLayout.width && carouselLayout.height
+        ? carouselCenterX - rootCenterX
+        : 0;
+    const baseOffsetY =
+      carouselLayout.width && carouselLayout.height
+        ? carouselCenterY - rootCenterY
+        : 0;
 
     const target1CenterX = target1Left + PILL_1_SIZE / 2;
     const target1CenterY = target1Top + PILL_1_SIZE / 2;
     const target2CenterX = target2Left + PILL_2_SIZE / 2;
     const target2CenterY = target2Top + PILL_2_SIZE / 2;
 
-    const to1X = completedSteps ? (target1CenterX - rootCenterX) : baseOffsetX;
-    const to1Y = completedSteps ? (target1CenterY - rootCenterY) : baseOffsetY;
-    const to2X = completedSteps ? (target2CenterX - rootCenterX) : baseOffsetX;
-    const to2Y = completedSteps ? (target2CenterY - rootCenterY) : baseOffsetY;
+    const to1X = completedSteps ? target1CenterX - rootCenterX : baseOffsetX;
+    const to1Y = completedSteps ? target1CenterY - rootCenterY : baseOffsetY;
+    const to2X = completedSteps ? target2CenterX - rootCenterX : baseOffsetX;
+    const to2Y = completedSteps ? target2CenterY - rootCenterY : baseOffsetY;
 
     const config = { duration: 550, easing: Easing.out(Easing.cubic) };
     pill1X.value = withTiming(to1X, config);
@@ -144,15 +155,35 @@ export default function Onboarding() {
 
   const onboardingCardAnimStyle = useAnimatedStyle(() => {
     // 0 = onboarding card visible, 1 = it has fallen off screen
-    const translateY = interpolate(cardProgress.value, [0, 1], [0, offscreenY], Extrapolation.CLAMP);
-    const opacity = interpolate(cardProgress.value, [0, 0.6, 1], [1, 0.35, 0], Extrapolation.CLAMP);
+    const translateY = interpolate(
+      cardProgress.value,
+      [0, 1],
+      [0, offscreenY],
+      Extrapolation.CLAMP
+    );
+    const opacity = interpolate(
+      cardProgress.value,
+      [0, 0.6, 1],
+      [1, 0.35, 0],
+      Extrapolation.CLAMP
+    );
     return { transform: [{ translateY }], opacity };
   }, [offscreenY]);
 
   const signInCardAnimStyle = useAnimatedStyle(() => {
     // 0 = off screen, 1 = visible
-    const translateY = interpolate(cardProgress.value, [0, 1], [offscreenY, 0], Extrapolation.CLAMP);
-    const opacity = interpolate(cardProgress.value, [0, 0.4, 1], [0, 0.5, 1], Extrapolation.CLAMP);
+    const translateY = interpolate(
+      cardProgress.value,
+      [0, 1],
+      [offscreenY, 0],
+      Extrapolation.CLAMP
+    );
+    const opacity = interpolate(
+      cardProgress.value,
+      [0, 0.4, 1],
+      [0, 0.5, 1],
+      Extrapolation.CLAMP
+    );
     // Center horizontally: translate by -50% of card width
     const cardWidth = containerSize.width ? containerSize.width - 32 : 0;
     const translateX = cardWidth ? -cardWidth / 2 : 0;
@@ -190,7 +221,6 @@ export default function Onboarding() {
     });
   };
 
-
   const handleClose = () => {
     setCompletedSteps(false);
   };
@@ -222,7 +252,7 @@ export default function Onboarding() {
         pointerEvents="none"
         style={[
           {
-            position: "absolute",
+            position: 'absolute',
             top: containerSize.height / 2,
             left: containerSize.width / 2,
             width: PILL_1_SIZE,
@@ -232,14 +262,18 @@ export default function Onboarding() {
           pill1Style,
         ]}
       >
-        <Image source={require("@/assets/pill.png")} resizeMode="contain" className="w-full h-full" />
+        <Image
+          source={require('@/assets/pill.png')}
+          resizeMode="contain"
+          className="w-full h-full"
+        />
       </Animated.View>
 
       <Animated.View
         pointerEvents="none"
         style={[
           {
-            position: "absolute",
+            position: 'absolute',
             top: containerSize.height / 2,
             left: containerSize.width / 2,
             width: PILL_2_SIZE,
@@ -249,7 +283,11 @@ export default function Onboarding() {
           pill2Style,
         ]}
       >
-        <Image source={require("@/assets/pill.png")} resizeMode="contain" className="w-full h-full" />
+        <Image
+          source={require('@/assets/pill.png')}
+          resizeMode="contain"
+          className="w-full h-full"
+        />
       </Animated.View>
 
       <View
@@ -264,8 +302,7 @@ export default function Onboarding() {
           width={screenWidth}
           data={steps}
           renderItem={({ item }) => (
-            <View className="flex-1 items-center justify-center">
-            </View>
+            <View className="flex-1 items-center justify-center"></View>
           )}
           onSnapToItem={onSnapToItem}
           onProgressChange={(offsetProgress, absoluteProgress) => {
@@ -277,12 +314,12 @@ export default function Onboarding() {
       </View>
 
       <Animated.View
-        pointerEvents={completedSteps ? "none" : "auto"}
+        pointerEvents={completedSteps ? 'none' : 'auto'}
         style={[onboardingCardAnimStyle]}
         className="w-full bg-background-day dark:bg-background-night rounded-4xl px-4 py-10 relative"
       >
         <SafeAreaView edges={[]} className="flex-1">
-          <View className='items-start justify-start flex-row'>
+          <View className="items-start justify-start flex-row">
             <Pagination.Custom
               progress={progress}
               data={steps}
@@ -295,12 +332,12 @@ export default function Onboarding() {
                 borderRadius: 4,
                 width: 32,
                 height: 8,
-                overflow: "hidden",
+                overflow: 'hidden',
                 backgroundColor: '#72D000',
               }}
               containerStyle={{
                 gap: 5,
-                alignItems: "center",
+                alignItems: 'center',
                 height: 8,
               }}
               horizontal
@@ -318,7 +355,7 @@ export default function Onboarding() {
                         val,
                         [0, 1],
                         [0, 0],
-                        Extrapolation.CLAMP,
+                        Extrapolation.CLAMP
                       ),
                     },
                   ],
@@ -326,15 +363,23 @@ export default function Onboarding() {
               }}
             />
           </View>
-          <View className='gap-2 my-6'>
-            <Text className='text-xl font-semibold text-text-day dark:text-text-night leading-tight'>{currentStepData.title}</Text>
-            <Text className='text-base text-text-day dark:text-text-night leading-tight'>{currentStepData.description}</Text>
+          <View className="gap-2 my-6">
+            <Text className="text-xl font-semibold text-text-day dark:text-text-night leading-tight">
+              {currentStepData.title}
+            </Text>
+            <Text className="text-base text-text-day dark:text-text-night leading-tight">
+              {currentStepData.description}
+            </Text>
           </View>
-          <View className='flex-row justify-between gap-2'>
-            <CustomButton className='flex-1' intent='secondary' onPress={handleSkip}>
+          <View className="flex-row justify-between gap-2">
+            <CustomButton
+              className="flex-1"
+              intent="secondary"
+              onPress={handleSkip}
+            >
               Skip
             </CustomButton>
-            <CustomButton className='flex-1' onPress={handleNext}>
+            <CustomButton className="flex-1" onPress={handleNext}>
               {isLastStep ? 'Finish' : 'Next'}
             </CustomButton>
           </View>
@@ -342,10 +387,10 @@ export default function Onboarding() {
       </Animated.View>
 
       <Animated.View
-        pointerEvents={completedSteps ? "auto" : "none"}
+        pointerEvents={completedSteps ? 'auto' : 'none'}
         style={[
           {
-            position: "absolute",
+            position: 'absolute',
             top: containerSize.height / 2,
             left: containerSize.width / 2,
             width: Math.max((containerSize.width || 0) - 32, 0),
@@ -374,10 +419,12 @@ export default function Onboarding() {
 
           {/* Heading */}
           <View className="mb-6">
-            <Text className="text-2xl font-semibold mb-2">Welcome to TaskNest!</Text>
+            <Text className="text-2xl font-semibold mb-2">
+              Welcome to TaskNest!
+            </Text>
             <Text className="text-base text-hint leading-snug">
-              Create tasks, share responsibilities, and keep your family life running smoothly —
-              all in one place.
+              Create tasks, share responsibilities, and keep your family life
+              running smoothly — all in one place.
             </Text>
           </View>
 
@@ -399,9 +446,9 @@ export default function Onboarding() {
               className="w-full mt-3 rounded-xl"
               onPress={handleEmailSignIn}
             >
-
               Continue with Email
-            </Button></Link>
+            </Button>
+          </Link>
 
           {/* Social sign-in options */}
           <View className="flex-row gap-3 mt-4">
@@ -422,9 +469,6 @@ export default function Onboarding() {
           </View>
         </View>
       </Animated.View>
-
-      <StatusBar style="light" />
     </View>
   );
 }
-

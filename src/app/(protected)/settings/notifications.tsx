@@ -1,17 +1,15 @@
-import { View, Text } from "react-native";
-import { useState } from "react";
-import { Switch } from "heroui-native";
-import WithArrowBack from "@/layout/with-arrow-back";
-import { useTranslation } from "react-i18next";
-import { CustomSwitch } from "@/components/custom-switch";
-import { StatusBar } from "expo-status-bar";
+import { View, Text } from 'react-native';
+import { useState } from 'react';
+import WithArrowBack from '@/layout/with-arrow-back';
+import { useTranslation } from 'react-i18next';
+import { CustomSwitch } from '@/components/custom-switch';
 
 type NotificationKey =
-  | "newTaskAssigned"
-  | "taskCompleted"
-  | "taskReminder"
-  | "familyMemberJoined"
-  | "taskOverdue";
+  | 'newTaskAssigned'
+  | 'taskCompleted'
+  | 'taskReminder'
+  | 'familyMemberJoined'
+  | 'taskOverdue';
 
 type NotificationRowProps = {
   title: string;
@@ -56,44 +54,43 @@ const Notifications = () => {
   };
 
   return (
-    <WithArrowBack title={t("settings.notifications")}>
+    <WithArrowBack title={t('settings.notifications')}>
       <View className="flex-1 mt-10">
         <View className="gap-6">
           <NotificationRow
             title="New Task Assigned"
             description="Get notified when someone assigns a task to you."
             value={settings.newTaskAssigned}
-            onChange={() => toggle("newTaskAssigned")}
+            onChange={() => toggle('newTaskAssigned')}
           />
           <NotificationRow
             title="Task Completed"
             description="Know when a family member finishes a task."
             value={settings.taskCompleted}
-            onChange={() => toggle("taskCompleted")}
+            onChange={() => toggle('taskCompleted')}
           />
           <NotificationRow
             title="Task Reminder"
             description="Receive reminders before task deadlines."
             value={settings.taskReminder}
-            onChange={() => toggle("taskReminder")}
+            onChange={() => toggle('taskReminder')}
           />
           <NotificationRow
             title="Family Member Joined"
             description="Be informed of changes to your family settings or name."
             value={settings.familyMemberJoined}
-            onChange={() => toggle("familyMemberJoined")}
+            onChange={() => toggle('familyMemberJoined')}
           />
           <NotificationRow
             title="Task Overdue"
             description="We'll remind you if a task you're assigned to is overdue."
             value={settings.taskOverdue}
-            onChange={() => toggle("taskOverdue")}
+            onChange={() => toggle('taskOverdue')}
           />
         </View>
       </View>
-      <StatusBar style="auto" />
     </WithArrowBack>
   );
 };
 
-export default Notifications
+export default Notifications;

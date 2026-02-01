@@ -1,14 +1,15 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, useColorScheme } from 'react-native';
+import { View, TouchableOpacity, Text } from 'react-native';
 import Arrow from '../components/icons/arrow';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams, useSegments } from 'expo-router';
 import { cn } from 'heroui-native';
+import { useAppTheme } from '@/contexts/app-theme-context';
 
 export default function WithArrowBack({
   children,
   title,
-  className
+  className,
 }: {
   children: React.ReactNode;
   title?: string;
@@ -17,7 +18,7 @@ export default function WithArrowBack({
   const router = useRouter();
   const segments = useSegments();
   const params = useLocalSearchParams();
-  const isDarkTheme = useColorScheme() === 'dark';
+  const { isDark } = useAppTheme();
   const handleBack = () => {
     const fromDeepLink = params.fromDeepLink === 'true';
     const isAtRoot = segments.length <= 1;
@@ -30,15 +31,24 @@ export default function WithArrowBack({
   };
 
   return (
-    <SafeAreaView style={{
-      flex: 1,
-      backgroundColor: isDarkTheme ? '#222222' : '#F2F2F2',
-    }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: isDark ? '#222222' : '#F2F2F2',
+      }}
+    >
       <View className={cn('flex-1 px-4', className)}>
         <View className="flex-row py-2!">
           <View className="flex-1">
-            <TouchableOpacity className="justify-center flex-1" onPress={handleBack}>
-              <Arrow stroke={isDarkTheme ? '#FFFFFF' : '#1B1B1B'} width={30} height={30} />
+            <TouchableOpacity
+              className="justify-center flex-1"
+              onPress={handleBack}
+            >
+              <Arrow
+                stroke={isDark ? '#FFFFFF' : '#1B1B1B'}
+                width={30}
+                height={30}
+              />
             </TouchableOpacity>
           </View>
           <View className="flex-1">

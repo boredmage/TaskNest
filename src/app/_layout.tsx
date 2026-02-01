@@ -1,15 +1,16 @@
-import "../../global.css";
+import '../../global.css';
 import { HeroUINativeProvider } from 'heroui-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Slot } from "expo-router";
+import { Slot } from 'expo-router';
 import {
   KeyboardAvoidingView,
   KeyboardProvider,
 } from 'react-native-keyboard-controller';
-import { useCallback, useEffect } from "react";
-import "@/i18n";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import i18n from "@/i18n";
+import { useCallback, useEffect } from 'react';
+import '@/i18n';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import i18n from '@/i18n';
+import { AppThemeProvider } from '@/contexts/app-theme-context';
 
 const AppContent = () => {
   const contentWrapper = useCallback(
@@ -27,25 +28,27 @@ const AppContent = () => {
   );
 
   return (
-    <HeroUINativeProvider
-      config={{
-        toast: {
-          contentWrapper,
-        },
-        devInfo: {
-          stylingPrinciples: false,
-        },
-      }}
-    >
-      <Slot />
-    </HeroUINativeProvider>
+    <AppThemeProvider>
+      <HeroUINativeProvider
+        config={{
+          toast: {
+            contentWrapper,
+          },
+          devInfo: {
+            stylingPrinciples: false,
+          },
+        }}
+      >
+        <Slot />
+      </HeroUINativeProvider>
+    </AppThemeProvider>
   );
 };
 
 export default function Layout() {
   useEffect(() => {
     (async () => {
-      const savedLang = await AsyncStorage.getItem("language");
+      const savedLang = await AsyncStorage.getItem('language');
       if (savedLang) {
         await i18n.changeLanguage(savedLang);
       }
