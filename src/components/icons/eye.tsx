@@ -1,13 +1,7 @@
 import * as React from "react";
 import Svg, { Path, SvgProps } from "react-native-svg";
 const Eye = (props: SvgProps) => (
-  <Svg
-    width={16}
-    height={16}
-    viewBox="0 0 24 24"
-    fill="none"
-    {...props}
-  >
+  <Svg width={16} height={16} viewBox="0 0 24 24" fill="none" {...props}>
     <Path
       d="M15.58 12c0 1.98-1.6 3.58-3.58 3.58S8.42 13.98 8.42 12s1.6-3.58 3.58-3.58 3.58 1.6 3.58 3.58"
       stroke="currentColor"

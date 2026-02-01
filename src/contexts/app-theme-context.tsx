@@ -1,11 +1,11 @@
-import React, { createContext, useCallback, useContext, useMemo } from 'react';
-import { Uniwind, useUniwind } from 'uniwind';
+import React, { createContext, useCallback, useContext, useMemo } from "react";
+import { Uniwind, useUniwind } from "uniwind";
 
 interface AppThemeContextType {
   currentTheme: string;
   isLight: boolean;
   isDark: boolean;
-  setTheme: (theme: 'light' | 'dark') => void;
+  setTheme: (theme: "light" | "dark") => void;
   toggleTheme: () => void;
 }
 
@@ -19,24 +19,24 @@ export const AppThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   const { theme } = useUniwind();
 
   const isLight = useMemo(() => {
-    return theme === 'light' || theme.endsWith('-light');
+    return theme === "light" || theme.endsWith("-light");
   }, [theme]);
 
   const isDark = useMemo(() => {
-    return theme === 'dark' || theme.endsWith('-dark');
+    return theme === "dark" || theme.endsWith("-dark");
   }, [theme]);
 
-  const setTheme = useCallback((newTheme: 'light' | 'dark') => {
+  const setTheme = useCallback((newTheme: "light" | "dark") => {
     Uniwind.setTheme(newTheme);
   }, []);
 
   const toggleTheme = useCallback(() => {
     switch (theme) {
-      case 'light':
-        Uniwind.setTheme('dark');
+      case "light":
+        Uniwind.setTheme("dark");
         break;
-      case 'dark':
-        Uniwind.setTheme('light');
+      case "dark":
+        Uniwind.setTheme("light");
         break;
     }
   }, [theme]);
@@ -62,7 +62,7 @@ export const AppThemeProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useAppTheme = () => {
   const context = useContext(AppThemeContext);
   if (!context) {
-    throw new Error('useAppTheme must be used within AppThemeProvider');
+    throw new Error("useAppTheme must be used within AppThemeProvider");
   }
   return context;
 };

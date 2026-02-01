@@ -61,7 +61,7 @@ const Profile = () => {
 
         {/* Save Button */}
         <View className="mt-auto pb-6">
-          <CustomButton className="w-full h-12 rounded-xl" onPress={() => { }}>
+          <CustomButton className="w-full h-12 rounded-xl" onPress={() => {}}>
             Save
           </CustomButton>
         </View>

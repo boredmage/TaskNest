@@ -5,7 +5,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Arrow from "@/components/icons/arrow";
 
 export default function AuthLayout() {
-
   const router = useRouter();
 
   const handleBack = () => {
@@ -25,4 +24,3 @@ export default function AuthLayout() {
     </SafeAreaView>
   );
 }
-

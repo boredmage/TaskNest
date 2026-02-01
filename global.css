@@ -1,34 +1,35 @@
 @import "tailwindcss";
 @import "uniwind";
 
-@import 'heroui-native/styles';
+@import "heroui-native/styles";
 @source './node_modules/heroui-native/lib';
 
 @theme {
-  --color-main: #72D000;
-  --color-hint: #A0A0A0;
+  --color-main: #72d000;
+  --color-hint: #a0a0a0;
   --color-main-light: #72d00026;
 
-  --color-primary-day: #FFFFFF;
+  --color-primary-day: #ffffff;
   --color-primary-night: #303030;
 
-
-  --color-background-day: #FFFFFF;
+  --color-background-day: #ffffff;
   --color-background-night: #222222;
 
   --color-transparent-day: #0000000f;
   --color-transparent-night: #ffffff1a;
 
-  --color-text-day: #1B1B1B;
-  --color-text-night: #FFFFFF;
+  --color-text-day: #1b1b1b;
+  --color-text-night: #ffffff;
 
-  --font-family-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-family-inter-regular: 'Inter-Regular';
-  --font-family-inter-medium: 'Inter-Medium';
-  --font-family-inter-semibold: 'Inter-SemiBold';
-  --font-family-inter-bold: 'Inter-Bold';
-  --font-family-inter-extrabold: 'Inter-ExtraBold';
-  --font-family-inter-black: 'Inter-Black';
+  --font-family-sans:
+    "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-family-inter-regular: "Inter-Regular";
+  --font-family-inter-medium: "Inter-Medium";
+  --font-family-inter-semibold: "Inter-SemiBold";
+  --font-family-inter-bold: "Inter-Bold";
+  --font-family-inter-extrabold: "Inter-ExtraBold";
+  --font-family-inter-black: "Inter-Black";
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;

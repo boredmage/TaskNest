@@ -1,8 +1,8 @@
-import { CustomButton } from '@/components/custom-button'
-import ChevronRight from '@/components/icons/chevron-right'
-import WithArrowBack from '@/layout/with-arrow-back'
-import { Select } from 'heroui-native'
-import { View, Text } from 'react-native'
+import { CustomButton } from "@/components/custom-button";
+import ChevronRight from "@/components/icons/chevron-right";
+import WithArrowBack from "@/layout/with-arrow-back";
+import { Select } from "heroui-native";
+import { View, Text } from "react-native";
 
 const NewTask = () => {
   return (
@@ -18,7 +18,6 @@ const NewTask = () => {
               <Select.Value placeholder="" />
               <ChevronRight />
             </View>
-
           </Select.Trigger>
           <Select.Portal>
             <Select.Overlay />
@@ -29,12 +28,10 @@ const NewTask = () => {
           </Select.Portal>
         </Select>
 
-        <CustomButton>
-          Create Task
-        </CustomButton>
+        <CustomButton>Create Task</CustomButton>
       </View>
     </WithArrowBack>
-  )
-}
+  );
+};
 
-export default NewTask
+export default NewTask;

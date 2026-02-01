@@ -1,13 +1,7 @@
 import * as React from "react";
 import Svg, { Path, SvgProps } from "react-native-svg";
 const HomeIcon = (props: SvgProps) => (
-  <Svg
-    width={28}
-    height={28}
-    viewBox="0 0 28 28"
-    fill="none"
-    {...props}
-  >
+  <Svg width={28} height={28} viewBox="0 0 28 28" fill="none" {...props}>
     <Path
       fillRule="evenodd"
       clipRule="evenodd"

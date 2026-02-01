@@ -1,13 +1,7 @@
 import * as React from "react";
 import Svg, { Path, SvgProps } from "react-native-svg";
 const EyeSlash = (props: SvgProps) => (
-  <Svg
-    width={16}
-    height={16}
-    viewBox="0 0 24 24"
-    fill="none"
-    {...props}
-  >
+  <Svg width={16} height={16} viewBox="0 0 24 24" fill="none" {...props}>
     <Path
       d="m14.53 9.47-5.06 5.06a3.576 3.576 0 1 1 5.06-5.06"
       stroke="currentColor"

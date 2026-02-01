@@ -14,7 +14,7 @@ function TabLabel({ label }: { label: string }) {
 
 export default function TabsLayout() {
   const { t } = useTranslation();
-  
+
   return (
     <Tabs
       screenOptions={{

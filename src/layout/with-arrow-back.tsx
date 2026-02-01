@@ -1,10 +1,10 @@
-import React from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
-import Arrow from '../components/icons/arrow';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, useLocalSearchParams, useSegments } from 'expo-router';
-import { cn } from 'heroui-native';
-import { useAppTheme } from '@/contexts/app-theme-context';
+import React from "react";
+import { View, TouchableOpacity, Text } from "react-native";
+import Arrow from "../components/icons/arrow";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter, useLocalSearchParams, useSegments } from "expo-router";
+import { cn } from "heroui-native";
+import { useAppTheme } from "@/contexts/app-theme-context";
 
 export default function WithArrowBack({
   children,
@@ -20,11 +20,11 @@ export default function WithArrowBack({
   const params = useLocalSearchParams();
   const { isDark } = useAppTheme();
   const handleBack = () => {
-    const fromDeepLink = params.fromDeepLink === 'true';
+    const fromDeepLink = params.fromDeepLink === "true";
     const isAtRoot = segments.length <= 1;
 
     if (fromDeepLink || isAtRoot) {
-      router.replace('/(tabs)');
+      router.replace("/(tabs)");
     } else {
       router.back();
     }
@@ -34,10 +34,10 @@ export default function WithArrowBack({
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: isDark ? '#222222' : '#F2F2F2',
+        backgroundColor: isDark ? "#222222" : "#F2F2F2",
       }}
     >
-      <View className={cn('flex-1 px-4', className)}>
+      <View className={cn("flex-1 px-4", className)}>
         <View className="flex-row py-2!">
           <View className="flex-1">
             <TouchableOpacity
@@ -45,7 +45,7 @@ export default function WithArrowBack({
               onPress={handleBack}
             >
               <Arrow
-                stroke={isDark ? '#FFFFFF' : '#1B1B1B'}
+                stroke={isDark ? "#FFFFFF" : "#1B1B1B"}
                 width={30}
                 height={30}
               />

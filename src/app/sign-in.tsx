@@ -1,12 +1,12 @@
-import React from 'react';
-import { View, Text, Image } from 'react-native';
-import { useRouter } from 'expo-router';
+import React from "react";
+import { View, Text, Image } from "react-native";
+import { useRouter } from "expo-router";
 
-import { CustomButton } from '@/components/custom-button';
-import AppleIcon from '@/components/icons/apple-icon';
-import GoogleIcon from '@/components/icons/google-icon';
-import { Button } from 'heroui-native';
-import XIcon from '@/components/icons/x-icon';
+import { CustomButton } from "@/components/custom-button";
+import AppleIcon from "@/components/icons/apple-icon";
+import GoogleIcon from "@/components/icons/google-icon";
+import { Button } from "heroui-native";
+import XIcon from "@/components/icons/x-icon";
 
 const SignIn = () => {
   const router = useRouter();
@@ -21,12 +21,12 @@ const SignIn = () => {
 
   const handleAppleSignIn = () => {
     // TODO: Implement Apple sign-in
-    router.replace('/');
+    router.replace("/");
   };
 
   const handleGoogleSignIn = () => {
     // TODO: Implement Google sign-in
-    router.replace('/');
+    router.replace("/");
   };
 
   return (
@@ -35,11 +35,11 @@ const SignIn = () => {
         <View className="relative">
           {/* Decorative background pills, positioned relative to form */}
           <Image
-            source={require('@/assets/pill.png')}
+            source={require("@/assets/pill.png")}
             className="absolute -top-20 -left-20 w-56 h-56"
           />
           <Image
-            source={require('@/assets/pill.png')}
+            source={require("@/assets/pill.png")}
             className="absolute -bottom-28 -right-24 w-64 h-64"
           />
 

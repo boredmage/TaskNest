@@ -1,6 +1,6 @@
-import { Text, View, Image, Dimensions } from 'react-native';
-import { useEffect, useState, useRef } from 'react';
-import { Link, useRouter } from 'expo-router';
+import { Text, View, Image, Dimensions } from "react-native";
+import { useEffect, useState, useRef } from "react";
+import { Link, useRouter } from "expo-router";
 import Animated, {
   Easing,
   Extrapolation,
@@ -8,40 +8,40 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from 'react-native-reanimated';
+} from "react-native-reanimated";
 import Carousel, {
   ICarouselInstance,
   Pagination,
-} from 'react-native-reanimated-carousel';
-import { CustomButton } from '../components/custom-button';
-import { SafeAreaView } from 'react-native-safe-area-context';
+} from "react-native-reanimated-carousel";
+import { CustomButton } from "../components/custom-button";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import AppleIcon from '@/components/icons/apple-icon';
-import GoogleIcon from '@/components/icons/google-icon';
-import { Button } from 'heroui-native';
-import XIcon from '@/components/icons/x-icon';
+import AppleIcon from "@/components/icons/apple-icon";
+import GoogleIcon from "@/components/icons/google-icon";
+import { Button } from "heroui-native";
+import XIcon from "@/components/icons/x-icon";
 
-const { width: screenWidth } = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get("window");
 
-const slide1 = require('../assets/pill.png');
-const slide2 = require('../assets/pill.png');
-const slide3 = require('../assets/pill.png');
+const slide1 = require("../assets/pill.png");
+const slide2 = require("../assets/pill.png");
+const slide3 = require("../assets/pill.png");
 
 const steps = [
   {
-    title: 'Organize as a Family',
+    title: "Organize as a Family",
     description:
-      'Assign chores and stay on the same page — your family, working as one team.',
+      "Assign chores and stay on the same page — your family, working as one team.",
     image: slide1,
   },
   {
-    title: 'Stay in Sync',
-    description: 'Get notified when tasks are done and see changes instantly.',
+    title: "Stay in Sync",
+    description: "Get notified when tasks are done and see changes instantly.",
     image: slide2,
   },
   {
-    title: 'One Place for Everything',
-    description: 'Groceries, events, and plans — manage it all in one app.',
+    title: "One Place for Everything",
+    description: "Groceries, events, and plans — manage it all in one app.",
     image: slide3,
   },
 ];
@@ -231,12 +231,12 @@ export default function Onboarding() {
 
   const handleAppleSignIn = () => {
     // TODO: Implement Apple sign-in
-    router.replace('/');
+    router.replace("/");
   };
 
   const handleGoogleSignIn = () => {
     // TODO: Implement Google sign-in
-    router.replace('/');
+    router.replace("/");
   };
 
   return (
@@ -252,7 +252,7 @@ export default function Onboarding() {
         pointerEvents="none"
         style={[
           {
-            position: 'absolute',
+            position: "absolute",
             top: containerSize.height / 2,
             left: containerSize.width / 2,
             width: PILL_1_SIZE,
@@ -263,7 +263,7 @@ export default function Onboarding() {
         ]}
       >
         <Image
-          source={require('@/assets/pill.png')}
+          source={require("@/assets/pill.png")}
           resizeMode="contain"
           className="w-full h-full"
         />
@@ -273,7 +273,7 @@ export default function Onboarding() {
         pointerEvents="none"
         style={[
           {
-            position: 'absolute',
+            position: "absolute",
             top: containerSize.height / 2,
             left: containerSize.width / 2,
             width: PILL_2_SIZE,
@@ -284,7 +284,7 @@ export default function Onboarding() {
         ]}
       >
         <Image
-          source={require('@/assets/pill.png')}
+          source={require("@/assets/pill.png")}
           resizeMode="contain"
           className="w-full h-full"
         />
@@ -314,7 +314,7 @@ export default function Onboarding() {
       </View>
 
       <Animated.View
-        pointerEvents={completedSteps ? 'none' : 'auto'}
+        pointerEvents={completedSteps ? "none" : "auto"}
         style={[onboardingCardAnimStyle]}
         className="w-full bg-background-day dark:bg-background-night rounded-4xl px-4 py-10 relative"
       >
@@ -326,18 +326,18 @@ export default function Onboarding() {
               size={8}
               dotStyle={{
                 borderRadius: 4,
-                backgroundColor: '#0000000f',
+                backgroundColor: "#0000000f",
               }}
               activeDotStyle={{
                 borderRadius: 4,
                 width: 32,
                 height: 8,
-                overflow: 'hidden',
-                backgroundColor: '#72D000',
+                overflow: "hidden",
+                backgroundColor: "#72D000",
               }}
               containerStyle={{
                 gap: 5,
-                alignItems: 'center',
+                alignItems: "center",
                 height: 8,
               }}
               horizontal
@@ -380,17 +380,17 @@ export default function Onboarding() {
               Skip
             </CustomButton>
             <CustomButton className="flex-1" onPress={handleNext}>
-              {isLastStep ? 'Finish' : 'Next'}
+              {isLastStep ? "Finish" : "Next"}
             </CustomButton>
           </View>
         </SafeAreaView>
       </Animated.View>
 
       <Animated.View
-        pointerEvents={completedSteps ? 'auto' : 'none'}
+        pointerEvents={completedSteps ? "auto" : "none"}
         style={[
           {
-            position: 'absolute',
+            position: "absolute",
             top: containerSize.height / 2,
             left: containerSize.width / 2,
             width: Math.max((containerSize.width || 0) - 32, 0),

@@ -9,13 +9,7 @@ import Svg, {
   SvgProps,
 } from "react-native-svg";
 const YellowBell = (props: SvgProps) => (
-  <Svg
-    width={46}
-    height={46}
-    viewBox="0 0 46 46"
-    fill="none"
-    {...props}
-  >
+  <Svg width={46} height={46} viewBox="0 0 46 46" fill="none" {...props}>
     <G clipPath="url(#a)">
       <Path
         fillRule="evenodd"

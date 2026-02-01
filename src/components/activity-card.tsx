@@ -1,37 +1,37 @@
-import { View, Text, Pressable, LayoutChangeEvent } from 'react-native';
-import { useState, useEffect } from 'react';
+import { View, Text, Pressable, LayoutChangeEvent } from "react-native";
+import { useState, useEffect } from "react";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   Easing,
-} from 'react-native-reanimated';
-import { Avatar, Checkbox, cn } from 'heroui-native';
-import { StatusEnum } from '@/type';
-import { useAppTheme } from '@/contexts/app-theme-context';
+} from "react-native-reanimated";
+import { Avatar, Checkbox, cn } from "heroui-native";
+import { StatusEnum } from "@/type";
+import { useAppTheme } from "@/contexts/app-theme-context";
 
 const MONTH_NAMES = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 function parseDateTime(dateTime: string): Date | null {
-  const iso = dateTime.includes('T') || dateTime.includes(' ');
+  const iso = dateTime.includes("T") || dateTime.includes(" ");
   if (iso) {
     const d = new Date(dateTime);
     return Number.isNaN(d.getTime()) ? null : d;
   }
-  const parts = dateTime.trim().split('-').map(Number);
+  const parts = dateTime.trim().split("-").map(Number);
   if (parts.length >= 3 && parts.every((n) => !Number.isNaN(n))) {
     return new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0);
   }
@@ -40,7 +40,7 @@ function parseDateTime(dateTime: string): Date | null {
 }
 
 function formatDateLabel(dateTime?: string): string {
-  if (!dateTime) return '';
+  if (!dateTime) return "";
   const d = parseDateTime(dateTime);
   if (!d) return dateTime;
 
@@ -52,7 +52,7 @@ function formatDateLabel(dateTime?: string): string {
 
   const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
   const hour12 = d.getHours() % 12 || 12;
-  const ampm = d.getHours() < 12 ? 'am' : 'pm';
+  const ampm = d.getHours() < 12 ? "am" : "pm";
   const timeStr = `${hour12}:${pad(d.getMinutes())} ${ampm}`;
 
   const diffDays = Math.round(
@@ -118,7 +118,7 @@ export function ActivityCard({
       onPress={onPress}
       className="bg-primary-day dark:bg-primary-night rounded-2xl p-4 active:opacity-95"
       style={{
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.06,
         shadowRadius: 3,
@@ -129,13 +129,13 @@ export function ActivityCard({
           <View
             onLayout={onTitleLayout}
             className="relative"
-            style={{ alignSelf: 'flex-start' }}
+            style={{ alignSelf: "flex-start" }}
           >
             <Text
               className={cn(
-                'text-base font-semibold text-text-day dark:text-text-night',
+                "text-base font-semibold text-text-day dark:text-text-night",
                 status === StatusEnum.OVERDUE &&
-                  'text-[#FF5050] dark:text-[#FF5050]'
+                  "text-[#FF5050] dark:text-[#FF5050]"
               )}
               numberOfLines={1}
             >
@@ -146,16 +146,16 @@ export function ActivityCard({
               style={[
                 strikeAnimatedStyle,
                 {
-                  position: 'absolute',
+                  position: "absolute",
                   left: 0,
                   top: strikeLineTop,
                   height: 1.5,
                   backgroundColor:
                     status === StatusEnum.OVERDUE
-                      ? '#FF5050'
+                      ? "#FF5050"
                       : isDark
-                        ? '#FFFFFF'
-                        : '#000',
+                        ? "#FFFFFF"
+                        : "#000",
                   borderRadius: 1,
                 },
               ]}
@@ -163,8 +163,8 @@ export function ActivityCard({
           </View>
           <Text
             className={cn(
-              'text-base text-hint mt-1 leading-5',
-              status === StatusEnum.OVERDUE && 'text-[#FF5050]'
+              "text-base text-hint mt-1 leading-5",
+              status === StatusEnum.OVERDUE && "text-[#FF5050]"
             )}
             numberOfLines={3}
           >
@@ -176,10 +176,10 @@ export function ActivityCard({
           variant="secondary"
           onSelectedChange={handleToggle}
           className={cn(
-            'rounded-full size-6 shadow-none border-2',
+            "rounded-full size-6 shadow-none border-2",
             isCompleted
-              ? 'bg-main border-main'
-              : 'bg-primary-day dark:bg-primary-night border-transparent-day dark:border-transparent-night'
+              ? "bg-main border-main"
+              : "bg-primary-day dark:bg-primary-night border-transparent-day dark:border-transparent-night"
           )}
         >
           <Checkbox.Indicator className="bg-transparent" />
@@ -191,9 +191,9 @@ export function ActivityCard({
       <View className="flex-row items-center justify-between">
         <Text
           className={cn(
-            'text-base text-hint',
+            "text-base text-hint",
             status === StatusEnum.OVERDUE &&
-              'text-[#FF5050] dark:text-[#FF5050]'
+              "text-[#FF5050] dark:text-[#FF5050]"
           )}
         >
           {formatDateLabel(dateTime)}
@@ -204,8 +204,8 @@ export function ActivityCard({
               key={`${uri}-${index}`}
               alt={`Assignee ${index + 1}`}
               className={cn(
-                'w-8 h-8 rounded-full border-2 border-background-day dark:border-background-night',
-                index === 0 ? 'ml-0' : '-ml-4'
+                "w-8 h-8 rounded-full border-2 border-background-day dark:border-background-night",
+                index === 0 ? "ml-0" : "-ml-4"
               )}
             >
               <Avatar.Image source={{ uri }} />

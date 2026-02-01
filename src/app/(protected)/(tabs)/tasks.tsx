@@ -1,11 +1,11 @@
-import { Text, View } from 'react-native';
-import { Link } from 'expo-router';
-import { CustomButton } from '@/components/custom-button';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import StatsCard from '@/components/stats-card';
-import { StatusEnum as Status } from '@/type';
-import { useTranslation } from 'react-i18next';
-import { useAppTheme } from '@/contexts/app-theme-context';
+import { Text, View } from "react-native";
+import { Link } from "expo-router";
+import { CustomButton } from "@/components/custom-button";
+import { SafeAreaView } from "react-native-safe-area-context";
+import StatsCard from "@/components/stats-card";
+import { StatusEnum as Status } from "@/type";
+import { useTranslation } from "react-i18next";
+import { useAppTheme } from "@/contexts/app-theme-context";
 
 const Tasks = () => {
   const { t } = useTranslation();
@@ -15,12 +15,12 @@ const Tasks = () => {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: isDark ? '#222222' : '#F2F2F2',
+        backgroundColor: isDark ? "#222222" : "#F2F2F2",
       }}
     >
       <View className="flex-1 px-4 gap-4">
         <Text className="text-2xl my-2 font-semibold text-text-day dark:text-text-night self-center">
-          {t('tabs.tasks')}
+          {t("tabs.tasks")}
         </Text>
 
         <View className="gap-2">

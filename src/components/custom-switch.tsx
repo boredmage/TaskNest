@@ -1,30 +1,30 @@
-import { Switch } from 'heroui-native';
-import type { SwitchProps } from 'heroui-native';
-import { useAppTheme } from '@/contexts/app-theme-context';
+import { Switch } from "heroui-native";
+import type { SwitchProps } from "heroui-native";
+import { useAppTheme } from "@/contexts/app-theme-context";
 
 interface CustomSwitchProps extends Omit<
   SwitchProps,
-  'className' | 'animation'
+  "className" | "animation"
 > {
   value: boolean;
   onValueChange: (value: boolean) => void;
-  size?: 'small' | 'medium' | 'large';
+  size?: "small" | "medium" | "large";
 }
 
 const sizeClasses = {
   small: {
-    container: 'w-[44px] h-[26px]',
-    thumb: 'size-4',
+    container: "w-[44px] h-[26px]",
+    thumb: "size-4",
     left: 3,
   },
   medium: {
-    container: 'w-[48px] h-[28px]',
-    thumb: 'size-5',
+    container: "w-[48px] h-[28px]",
+    thumb: "size-5",
     left: 3,
   },
   large: {
-    container: 'w-[56px] h-[32px]',
-    thumb: 'size-6',
+    container: "w-[56px] h-[32px]",
+    thumb: "size-6",
     left: 4,
   },
 };
@@ -32,7 +32,7 @@ const sizeClasses = {
 export function CustomSwitch({
   value,
   onValueChange,
-  size = 'medium',
+  size = "medium",
   ...props
 }: CustomSwitchProps) {
   const sizeConfig = sizeClasses[size];
@@ -45,7 +45,7 @@ export function CustomSwitch({
       onSelectedChange={onValueChange}
       animation={{
         backgroundColor: {
-          value: [isDark ? '#78788029' : '#E5E5E5', '#72D000'],
+          value: [isDark ? "#78788029" : "#E5E5E5", "#72D000"],
         },
       }}
       {...props}

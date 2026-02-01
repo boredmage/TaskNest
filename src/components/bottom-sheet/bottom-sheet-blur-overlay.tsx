@@ -1,9 +1,7 @@
-import { BottomSheet, useBottomSheetAnimation } from 'heroui-native';
-import { StyleSheet } from 'react-native';
-import {
-  interpolate, useDerivedValue,
-} from 'react-native-reanimated';
-import AnimatedBlurView from '../animated-blur-view';
+import { BottomSheet, useBottomSheetAnimation } from "heroui-native";
+import { StyleSheet } from "react-native";
+import { interpolate, useDerivedValue } from "react-native-reanimated";
+import AnimatedBlurView from "../animated-blur-view";
 
 export const BottomSheetBlurOverlay = () => {
   const { progress } = useBottomSheetAnimation();
@@ -16,10 +14,9 @@ export const BottomSheetBlurOverlay = () => {
     <BottomSheet.Close style={StyleSheet.absoluteFill}>
       <AnimatedBlurView
         blurIntensity={blurIntensity}
-        tint='systemUltraThinMaterialDark'
+        tint="systemUltraThinMaterialDark"
         style={StyleSheet.absoluteFill}
       />
     </BottomSheet.Close>
   );
 };
-

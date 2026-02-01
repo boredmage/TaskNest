@@ -14,9 +14,7 @@ function EmptyTodos() {
       <View className="bg-[#A06CFF] rounded-lg p-2 items-center justify-center size-10">
         <FileIcon />
       </View>
-      <Text className="text-2xl font-semibold text-text-day">
-        No Tasks Yet
-      </Text>
+      <Text className="text-2xl font-semibold text-text-day">No Tasks Yet</Text>
       <Text className="text-center max-w-60 text-hint text-base leading-0">
         Start by adding a new task. Once you do, it will appear here.
       </Text>
@@ -53,4 +51,4 @@ const Todos = () => {
   );
 };
 
-export default Todos
+export default Todos;

@@ -1,26 +1,26 @@
-import { View } from 'react-native';
-import { useState } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Avatar, BottomSheet, cn, RadioGroup } from 'heroui-native';
-import { CustomButton } from '@/components/custom-button';
-import { BottomSheetBlurOverlay } from '@/components/bottom-sheet/bottom-sheet-blur-overlay';
-import { JoinFamilyDialog } from '@/components/dialog/join-family-dialog';
-import File from '@/components/icons/bottom-sheet/file';
-import Pin from '@/components/icons/bottom-sheet/pin';
-import Heart from '@/components/icons/bottom-sheet/heart';
-import Link from '@/components/icons/bottom-sheet/link';
-import Message from '@/components/icons/bottom-sheet/message';
-import Users from '@/components/icons/bottom-sheet/users';
-import { useAppTheme } from '@/contexts/app-theme-context';
+import { View } from "react-native";
+import { useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Avatar, BottomSheet, cn, RadioGroup } from "heroui-native";
+import { CustomButton } from "@/components/custom-button";
+import { BottomSheetBlurOverlay } from "@/components/bottom-sheet/bottom-sheet-blur-overlay";
+import { JoinFamilyDialog } from "@/components/dialog/join-family-dialog";
+import File from "@/components/icons/bottom-sheet/file";
+import Pin from "@/components/icons/bottom-sheet/pin";
+import Heart from "@/components/icons/bottom-sheet/heart";
+import Link from "@/components/icons/bottom-sheet/link";
+import Message from "@/components/icons/bottom-sheet/message";
+import Users from "@/components/icons/bottom-sheet/users";
+import { useAppTheme } from "@/contexts/app-theme-context";
 
-export type FamilyOption = 'create' | 'join' | null;
+export type FamilyOption = "create" | "join" | null;
 
 const iconsMap = [
-  { id: 1, icon: <File color="white" />, bg: '#10D470' },
-  { id: 2, icon: <Pin color="white" />, bg: '#FFA446' },
-  { id: 3, icon: <Heart color="white" />, bg: '#3A8AFF' },
-  { id: 4, icon: <Link color="white" />, bg: '#767676' },
-  { id: 5, icon: <Message color="white" />, bg: '#7559EA' },
+  { id: 1, icon: <File color="white" />, bg: "#10D470" },
+  { id: 2, icon: <Pin color="white" />, bg: "#FFA446" },
+  { id: 3, icon: <Heart color="white" />, bg: "#3A8AFF" },
+  { id: 4, icon: <Link color="white" />, bg: "#767676" },
+  { id: 5, icon: <Message color="white" />, bg: "#7559EA" },
 ];
 
 export function TriggerNewFamilyBottomSheet() {
@@ -31,30 +31,30 @@ export function TriggerNewFamilyBottomSheet() {
   const { isDark } = useAppTheme();
 
   const familyOptions: Array<{
-    value: 'create' | 'join';
+    value: "create" | "join";
     label: string;
     description: string;
     icon: React.ReactNode;
   }> = [
     {
-      value: 'create',
-      label: 'Create a Family',
-      description: 'Invite others to join and manage tasks together.',
-      icon: <Users color={isDark ? '#FFFFFF' : '#1B1B1B'} />,
+      value: "create",
+      label: "Create a Family",
+      description: "Invite others to join and manage tasks together.",
+      icon: <Users color={isDark ? "#FFFFFF" : "#1B1B1B"} />,
     },
     {
-      value: 'join',
-      label: 'Join with a Code',
-      description: 'Enter your family code to join an existing group.',
+      value: "join",
+      label: "Join with a Code",
+      description: "Enter your family code to join an existing group.",
       icon: (
-        <Link color={isDark ? '#FFFFFF' : '#1B1B1B'} width={32} height={32} />
+        <Link color={isDark ? "#FFFFFF" : "#1B1B1B"} width={32} height={32} />
       ),
     },
   ];
   const handleNext = () => {
     if (selectedOption == null) return;
     setIsOpen(false);
-    if (selectedOption === 'join') {
+    if (selectedOption === "join") {
       setJoinDialogOpen(true);
     }
     // create: leave for now
@@ -83,8 +83,8 @@ export function TriggerNewFamilyBottomSheet() {
                 <Avatar
                   key={user.id}
                   className={cn(
-                    'border-background-day dark:border-background-night border-3',
-                    index !== 0 && '-ml-7'
+                    "border-background-day dark:border-background-night border-3",
+                    index !== 0 && "-ml-7"
                   )}
                   alt={user.id.toString()}
                   style={{ zIndex: iconsMap.length - index }}
@@ -121,8 +121,8 @@ export function TriggerNewFamilyBottomSheet() {
                 {({ isSelected }) => (
                   <View
                     className={cn(
-                      'flex-row items-center gap-3 rounded-2xl px-4 py-3 bg-transparent-day border-2',
-                      isSelected ? 'border-main' : 'border-transparent'
+                      "flex-row items-center gap-3 rounded-2xl px-4 py-3 bg-transparent-day border-2",
+                      isSelected ? "border-main" : "border-transparent"
                     )}
                   >
                     <View className="size-10 items-center justify-center">

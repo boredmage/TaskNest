@@ -8,7 +8,10 @@ type JoinFamilyDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-export function JoinFamilyDialog({ open, onOpenChange }: JoinFamilyDialogProps) {
+export function JoinFamilyDialog({
+  open,
+  onOpenChange,
+}: JoinFamilyDialogProps) {
   return (
     <Dialog isOpen={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
