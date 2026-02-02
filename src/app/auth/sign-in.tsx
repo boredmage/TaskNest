@@ -141,7 +141,7 @@ const SignIn = () => {
         <View className="flex-row justify-center gap-2">
           <Text className="text-hint text-base">Don't have an account?</Text>
           <Pressable
-            onPress={() => router.replace("/auth/email-auth")}
+            onPress={() => router.replace("/auth/sign-up")}
             hitSlop={10}
           >
             <Text className="text-main text-base font-medium">Sign up</Text>

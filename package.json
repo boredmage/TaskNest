@@ -25,7 +25,6 @@
     "expo-secure-store": "~15.0.8",
     "expo-sharing": "~14.0.8",
     "expo-splash-screen": "~31.0.13",
-    "expo-sqlite": "~16.0.10",
     "expo-status-bar": "~3.0.9",
     "heroui-native": "^1.0.0-beta.12",
     "i18next": "^25.8.0",

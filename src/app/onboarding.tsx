@@ -440,7 +440,7 @@ export default function Onboarding() {
           </Link>
 
           {/* Continue with email */}
-          <Link href="/auth/email-auth" asChild>
+          <Link href="/auth/sign-up" asChild>
             <Button
               variant="tertiary"
               className="mt-3 w-full rounded-xl"
