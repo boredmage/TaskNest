@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Session } from "@supabase/supabase-js";
 import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { HeroUINativeProvider } from "heroui-native";
 import { useCallback, useEffect, useState } from "react";
@@ -17,6 +18,10 @@ import {
 import "../../global.css";
 import { useProfileStore } from "../stores/profile-store";
 
+SplashScreen.setOptions({
+  fade: true,
+});
+
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
     supabase.auth.startAutoRefresh();
@@ -28,7 +33,8 @@ AppState.addEventListener("change", (state) => {
 const AppContent = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const { fetchProfile } = useProfileStore();
+  const { fetchProfile, clearProfile } = useProfileStore();
+
   const contentWrapper = useCallback(
     (children: React.ReactNode) => (
       <KeyboardAvoidingView
@@ -62,10 +68,10 @@ const AppContent = () => {
       if (session !== null) {
         setLoading(false);
         // Prefetch profile when user logs in
-        // fetchProfile();
+        fetchProfile();
       } else {
         // Clear profile when user logs out
-        // useProfileStore.getState().clearProfile();
+        clearProfile();
       }
     });
 

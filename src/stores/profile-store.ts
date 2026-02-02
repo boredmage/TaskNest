@@ -93,7 +93,8 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
       }
 
       // Refresh profile after update
-      await get().fetchProfile();
+      // await get().fetchProfile();
+      set({ profile: { ...get().profile!, ...updates } as Profile });
 
       return { error: null };
     } catch (err) {

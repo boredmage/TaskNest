@@ -24,13 +24,15 @@ const Family = () => {
   const { isDark } = useAppTheme();
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
   const activities = getRandomActivities(0);
-  const { profile } = useProfileStore();
+  const { profile, loading } = useProfileStore();
   const handleFilterChange = (filter: FilterKey) => {
     setActiveFilter(filter);
   };
 
   // Redirect to update-profile only once when profile is incomplete
   useEffect(() => {
+    if (loading) return;
+
     let cancelled = false;
     (async () => {
       const alreadyRedirected = await AsyncStorage.getItem(
@@ -49,7 +51,7 @@ const Family = () => {
     return () => {
       cancelled = true;
     };
-  }, [profile]);
+  }, [profile, loading]);
 
   return (
     <SafeAreaView

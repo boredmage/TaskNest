@@ -24,6 +24,15 @@
           ]
         }
       ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#72d000",
+          "image": "./assets/icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain"
+        }
+      ],
       "expo-localization",
       "expo-secure-store",
       "@react-native-community/datetimepicker"
