@@ -17,7 +17,7 @@ const News = () => {
       }}
     >
       <View className="flex-1 gap-4 px-4">
-        <Text className="text-text-day dark:text-text-night self-center text-2xl font-semibold">
+        <Text className="text-text-day dark:text-text-night my-2 self-center text-2xl font-semibold">
           {t("tabs.news")}
         </Text>
 

@@ -67,8 +67,9 @@ function formatDateLabel(dateTime?: string): string {
 export type ActivityCardProps = {
   title?: string;
   description?: string;
-  dateTime?: string;
+  dueDate?: string;
   assignedAvatarUris?: string[];
+  assignedNames?: string[];
   status?: StatusEnum;
   onToggleComplete?: () => void;
   onPress?: () => void;
@@ -77,7 +78,7 @@ export type ActivityCardProps = {
 export function ActivityCard({
   title,
   description,
-  dateTime,
+  dueDate,
   assignedAvatarUris,
   status = StatusEnum.TODO,
   onToggleComplete,
@@ -196,7 +197,7 @@ export function ActivityCard({
               "text-[#FF5050] dark:text-[#FF5050]"
           )}
         >
-          {formatDateLabel(dateTime)}
+          {formatDateLabel(dueDate)}
         </Text>
         <View className="flex-row items-center">
           {assignedAvatarUris?.slice(0, 3).map((uri, index) => (

@@ -5,6 +5,7 @@ import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppTheme } from "@/contexts/app-theme-context";
+import { supabase } from "@/lib/supabase";
 import { CustomSwitch } from "../../../components/custom-switch";
 import AboutFile from "../../../components/icons/about-file";
 import ChevronRight from "../../../components/icons/chevron-right";
@@ -53,6 +54,10 @@ const Settings = () => {
     );
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
+
   return (
     <SafeAreaView
       style={{
@@ -60,7 +65,7 @@ const Settings = () => {
         backgroundColor: isDark ? "#222222" : "#F2F2F2",
       }}
     >
-      <Text className="text-text-day dark:text-text-night mb-4 self-center text-2xl font-semibold">
+      <Text className="text-text-day dark:text-text-night my-2 self-center text-2xl font-semibold">
         {t("tabs.settings")}
       </Text>
 
@@ -69,7 +74,7 @@ const Settings = () => {
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="px-4 pb-24">
+        <View className="px-4 pt-4 pb-24">
           <Pressable
             className="mb-4 active:opacity-90"
             onPress={() => router.push("/settings/profile")}
@@ -144,7 +149,7 @@ const Settings = () => {
             <Button
               variant="danger-soft"
               className="rounded-xl"
-              onPress={() => router.replace("/onboarding")}
+              onPress={handleSignOut}
             >
               {t("settings.logout")}
             </Button>

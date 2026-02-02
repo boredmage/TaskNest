@@ -10,7 +10,7 @@ const Archive = () => {
         <View className="size-10 items-center justify-center rounded-lg bg-[#00000033] p-2">
           <ArchiveIcon width={20} height={20} />
         </View>
-        <Text className="text-text-day text-2xl font-semibold">
+        <Text className="text-text-day dark:text-text-night text-2xl font-semibold">
           No Archived Tasks
         </Text>
         <Text className="text-hint max-w-64 text-center text-base leading-0">

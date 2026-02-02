@@ -36,7 +36,7 @@ const Overdue = () => {
           <ActivityCard
             title={item.title}
             description={item.description}
-            dateTime={item.dueDate}
+            dueDate={item.dueDate}
             assignedAvatarUris={item.assignedAvatarUris ?? []}
             status={StatusEnum.OVERDUE}
           />

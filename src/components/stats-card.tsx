@@ -53,7 +53,7 @@ const StatsCard = ({ type, value }: { type: Status; value: number }) => {
     <Link href={`/${statusIconMap[type].route}`} asChild>
       <TouchableOpacity
         activeOpacity={0.85}
-        className="bg-primary-day dark:bg-primary-night flex-1 gap-4 rounded-xl p-4"
+        className="bg-primary-day dark:bg-primary-night flex-1 gap-3 rounded-xl p-2.5"
       >
         <View className="flex-row items-start justify-between gap-2">
           <View
