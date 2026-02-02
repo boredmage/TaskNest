@@ -88,7 +88,6 @@ const ResetPassword = () => {
             placeholder="——————"
             onComplete={(code) => {
               setCode(code);
-              console.log(code);
             }}
           >
             <InputOTP.Group>

@@ -1,5 +1,5 @@
 import type { ButtonRootProps } from "heroui-native";
-import { Button } from "heroui-native";
+import { Button, cn } from "heroui-native";
 import { tv, type VariantProps } from "tailwind-variants";
 
 const customButtonVariants = tv({
@@ -58,7 +58,10 @@ export function CustomButton({
       {...props}
     >
       <Button.Label
-        className={customLabelVariants({ intent, className: labelClassName })}
+        className={cn(
+          customLabelVariants({ intent, className: labelClassName }),
+          props.isDisabled && "text-hint"
+        )}
       >
         {children}
       </Button.Label>

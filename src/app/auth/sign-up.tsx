@@ -63,18 +63,13 @@ const SignUp = () => {
     try {
       setLoading(true);
 
-      const { error, data } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email: email,
         password: password,
       });
 
-      console.log("[LOG: SignUpWithEmail]: ", error, data);
-
       if (error) {
         throw error;
-      } else {
-        // router.replace("/");
-        console.log(data);
       }
     } catch (error) {
       showErrorToast("Error", (error as Error).message);

@@ -15,6 +15,7 @@ import {
   KeyboardProvider,
 } from "react-native-keyboard-controller";
 import "../../global.css";
+import { useProfileStore } from "./stores/profile-store";
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {
@@ -27,6 +28,7 @@ AppState.addEventListener("change", (state) => {
 const AppContent = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const { fetchProfile } = useProfileStore();
   const contentWrapper = useCallback(
     (children: React.ReactNode) => (
       <KeyboardAvoidingView
@@ -47,9 +49,9 @@ const AppContent = () => {
       setSession(session);
       setLoading(false);
       // Prefetch profile when session is available
-      // if (session) {
-      //   fetchProfile();
-      // }
+      if (session) {
+        fetchProfile();
+      }
     });
 
     // Listen for auth changes

@@ -36,20 +36,14 @@ const SignIn = () => {
   const signInWithEmail = async () => {
     try {
       setLoading(true);
-      const { error, data } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
       });
 
       if (error) {
-        if (error.code)
-          console.log(
-            "[LOG: SignInWithEmail]: ",
-            JSON.stringify(error, null, 2)
-          );
         throw error;
       }
-      console.log("[LOG: SignInWithEmail]: ", data);
       router.replace("/");
     } catch (error) {
       if (error instanceof AuthError) {
@@ -67,7 +61,6 @@ const SignIn = () => {
           );
         }
       }
-      console.log("[LOG: SignInWithEmail]: ", error);
     } finally {
       setLoading(false);
     }

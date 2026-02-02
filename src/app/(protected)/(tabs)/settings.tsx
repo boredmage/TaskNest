@@ -1,11 +1,17 @@
 import { useRouter } from "expo-router";
-import { Button } from "heroui-native";
+import { Button, cn } from "heroui-native";
 import { useTranslation } from "react-i18next";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useProfileStore } from "@/app/stores/profile-store";
+import User from "@/components/icons/user";
 import { useAppTheme } from "@/contexts/app-theme-context";
+import { UPDATE_PROFILE_REDIRECT_KEY } from "@/lib/constant";
 import { supabase } from "@/lib/supabase";
+import { getAvatarUrl } from "@/lib/util";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Avatar } from "heroui-native";
 import { CustomSwitch } from "../../../components/custom-switch";
 import AboutFile from "../../../components/icons/about-file";
 import ChevronRight from "../../../components/icons/chevron-right";
@@ -19,7 +25,7 @@ import Shield from "../../../components/icons/shield";
 const Settings = () => {
   const router = useRouter();
   const { isDark, toggleTheme } = useAppTheme();
-
+  const { profile, clearProfile } = useProfileStore();
   const { t } = useTranslation();
 
   const Row = ({
@@ -55,7 +61,9 @@ const Settings = () => {
   };
 
   const handleSignOut = async () => {
+    await AsyncStorage.removeItem(UPDATE_PROFILE_REDIRECT_KEY);
     await supabase.auth.signOut();
+    clearProfile();
   };
 
   return (
@@ -80,19 +88,39 @@ const Settings = () => {
             onPress={() => router.push("/settings/profile")}
           >
             <View className="bg-primary-day dark:bg-primary-night flex-row items-center rounded-xl p-4">
-              <View className="size-14 overflow-hidden rounded-full bg-[#E5E5E5]">
+              {/* <View className="size-14 overflow-hidden rounded-full bg-[#E5E5E5]">
                 <Image
                   source={{
-                    uri: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=120&h=120",
+                    uri: getAvatarUrl(profile?.avatar_url ?? null),
                   }}
                   className="h-full w-full"
                 />
-              </View>
+              </View> */}
+              <Avatar
+                alt="User"
+                className="bg-transparent-day dark:bg-transparent-night size-14"
+              >
+                <Avatar.Image
+                  source={{
+                    uri: getAvatarUrl(profile?.avatar_url ?? null) || undefined,
+                  }}
+                />
+                <Avatar.Fallback color="accent">
+                  <User width={24} height={24} color="#A0A0A0" />
+                </Avatar.Fallback>
+              </Avatar>
               <View className="ml-4 flex-1">
-                <Text className="text-text-day dark:text-text-night text-base font-semibold">
-                  Alex Johnson
+                <Text
+                  className={cn(
+                    "text-base",
+                    profile?.full_name
+                      ? "text-text-day dark:text-text-night font-semibold"
+                      : "text-hint/50 font-light"
+                  )}
+                >
+                  {profile?.full_name ?? "Click to update your profile"}
                 </Text>
-                <Text className="text-hint text-sm">example@domain.com</Text>
+                <Text className="text-hint text-sm">{profile?.email}</Text>
               </View>
               <ChevronRight />
             </View>

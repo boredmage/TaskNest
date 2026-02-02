@@ -61,7 +61,13 @@ export function TriggerNewFamilyBottomSheet() {
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onOpenChange={setIsOpen}>
+    <BottomSheet
+      isOpen={isOpen}
+      onOpenChange={(value) => {
+        setIsOpen(value);
+        if (!value) setSelectedOption(null);
+      }}
+    >
       <BottomSheet.Trigger asChild>
         <CustomButton size="sm" className="px-6">
           Start

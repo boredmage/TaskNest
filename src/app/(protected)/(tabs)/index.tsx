@@ -1,3 +1,4 @@
+import { useProfileStore } from "@/app/stores/profile-store";
 import { TriggerNewFamilyBottomSheet } from "@/components/bottom-sheet/trigger-new-family-bottom-sheet";
 import CategoryCard from "@/components/category-card";
 import { FilterChip, FilterKey } from "@/components/filter-chip";
@@ -9,9 +10,11 @@ import PlaneIcon from "@/components/icons/categories/plane";
 import PremiumActivityCard from "@/components/premium-activity-card";
 import { SearchField } from "@/components/search-field";
 import { useAppTheme } from "@/contexts/app-theme-context";
+import { UPDATE_PROFILE_REDIRECT_KEY } from "@/lib/constant";
 import { getRandomActivities } from "@/mock-data";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,12 +23,33 @@ const Family = () => {
   const { t } = useTranslation();
   const { isDark } = useAppTheme();
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
-  const activities = getRandomActivities(5);
-
+  const activities = getRandomActivities(0);
+  const { profile } = useProfileStore();
   const handleFilterChange = (filter: FilterKey) => {
     setActiveFilter(filter);
-    router.push("/update-profile");
   };
+
+  // Redirect to update-profile only once when profile is incomplete
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const alreadyRedirected = await AsyncStorage.getItem(
+        UPDATE_PROFILE_REDIRECT_KEY
+      );
+      if (cancelled) return;
+      if (!profile || !profile.full_name) {
+        if (!alreadyRedirected) {
+          await AsyncStorage.setItem(UPDATE_PROFILE_REDIRECT_KEY, "true");
+          router.push("/update-profile");
+        }
+      } else {
+        await AsyncStorage.setItem(UPDATE_PROFILE_REDIRECT_KEY, "true");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [profile]);
 
   return (
     <SafeAreaView
