@@ -1,4 +1,3 @@
-import { useProfileStore } from "@/app/stores/profile-store";
 import { TriggerNewFamilyBottomSheet } from "@/components/bottom-sheet/trigger-new-family-bottom-sheet";
 import CategoryCard from "@/components/category-card";
 import { FilterChip, FilterKey } from "@/components/filter-chip";
@@ -12,6 +11,7 @@ import { SearchField } from "@/components/search-field";
 import { useAppTheme } from "@/contexts/app-theme-context";
 import { UPDATE_PROFILE_REDIRECT_KEY } from "@/lib/constant";
 import { getRandomActivities } from "@/mock-data";
+import { useProfileStore } from "@/stores/profile-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";

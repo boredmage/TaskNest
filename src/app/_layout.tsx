@@ -15,7 +15,7 @@ import {
   KeyboardProvider,
 } from "react-native-keyboard-controller";
 import "../../global.css";
-import { useProfileStore } from "./stores/profile-store";
+import { useProfileStore } from "../stores/profile-store";
 
 AppState.addEventListener("change", (state) => {
   if (state === "active") {

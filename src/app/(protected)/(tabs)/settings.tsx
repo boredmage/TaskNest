@@ -4,12 +4,12 @@ import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useProfileStore } from "@/app/stores/profile-store";
 import User from "@/components/icons/user";
 import { useAppTheme } from "@/contexts/app-theme-context";
 import { UPDATE_PROFILE_REDIRECT_KEY } from "@/lib/constant";
 import { supabase } from "@/lib/supabase";
 import { getAvatarUrl } from "@/lib/util";
+import { useProfileStore } from "@/stores/profile-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Avatar } from "heroui-native";
 import { CustomSwitch } from "../../../components/custom-switch";

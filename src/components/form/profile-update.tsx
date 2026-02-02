@@ -1,10 +1,10 @@
-import { useProfileStore } from "@/app/stores/profile-store";
 import { CustomButton } from "@/components/custom-button";
 import { DateSelectorDialog } from "@/components/dialog/date-selector-dialog";
 import CameraPlus from "@/components/icons/camera-plus";
 import ChevronRight from "@/components/icons/chevron-right";
 import PlusIcon from "@/components/icons/plus";
 import { getAvatarUrl } from "@/lib/util";
+import { useProfileStore } from "@/stores/profile-store";
 import { format } from "date-fns";
 import * as ImagePicker from "expo-image-picker";
 import { Avatar, Spinner, TextField } from "heroui-native";
