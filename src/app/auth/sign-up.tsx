@@ -34,6 +34,21 @@ const SignUp = () => {
     });
   };
 
+  const showSuccessToast = (title: string, description: string) => {
+    toast.show({
+      component: (props) => (
+        <Toast
+          variant="success"
+          {...props}
+          className="rounded-xl border border-neutral-100 p-3"
+        >
+          <Toast.Title>{title}</Toast.Title>
+          <Toast.Description>{description}</Toast.Description>
+        </Toast>
+      ),
+    });
+  };
+
   const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -71,8 +86,16 @@ const SignUp = () => {
       if (error) {
         throw error;
       }
+
+      showSuccessToast(
+        "Registration successful",
+        `Please check your email to confirm your registration, then sign in. If you don't see the email, check your spam folder.`
+      );
+      setEmail("");
+      setPassword("");
     } catch (error) {
       showErrorToast("Error", (error as Error).message);
+      console.error("[SIGN UP] Error:", error);
     } finally {
       setLoading(false);
     }
