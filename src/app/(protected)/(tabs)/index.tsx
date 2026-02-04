@@ -6,6 +6,7 @@ import HomeIcon from "@/components/icons/categories/home";
 import MedicalIcon from "@/components/icons/categories/medical";
 import PetIcon from "@/components/icons/categories/pet";
 import PlaneIcon from "@/components/icons/categories/plane";
+import SettingsOutline from "@/components/icons/settings-outline";
 import PremiumActivityCard from "@/components/premium-activity-card";
 import { SearchField } from "@/components/search-field";
 import { useAppTheme } from "@/contexts/app-theme-context";
@@ -16,7 +17,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, ScrollView, Text, View } from "react-native";
+import {
+  FlatList,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Family = () => {
@@ -61,9 +68,23 @@ const Family = () => {
       }}
     >
       <View className="flex-1 gap-4 px-4">
-        <Text className="text-text-day dark:text-text-night my-2 self-center text-2xl font-semibold">
-          {t("tabs.family")}
-        </Text>
+        <View className="my-2 flex-row items-center justify-between">
+          <View className="flex-1"></View>
+          <View className="flex-1">
+            <Text className="text-text-day dark:text-text-night self-center text-2xl font-semibold">
+              {t("tabs.family")}
+            </Text>
+          </View>
+          <View className="flex-1 items-end">
+            <TouchableOpacity
+              onPress={() => router.push("/settings/family")}
+              activeOpacity={0.8}
+              hitSlop={10}
+            >
+              <SettingsOutline width={24} height={24} />
+            </TouchableOpacity>
+          </View>
+        </View>
 
         <SearchField />
 

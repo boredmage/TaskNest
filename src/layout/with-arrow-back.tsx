@@ -10,10 +10,12 @@ export default function WithArrowBack({
   children,
   title,
   className,
+  right,
 }: {
   children: React.ReactNode;
   title?: string;
   className?: string;
+  right?: React.ReactNode;
 }) {
   const router = useRouter();
   const segments = useSegments();
@@ -51,12 +53,12 @@ export default function WithArrowBack({
               />
             </TouchableOpacity>
           </View>
-          <View className="flex-1">
+          <View className="grow">
             <Text className="text-text-day dark:text-text-night text-center text-xl font-semibold">
               {title}
             </Text>
           </View>
-          <View className="flex-1"></View>
+          <View className="flex-1 items-end justify-center">{right}</View>
         </View>
         {children}
       </View>
