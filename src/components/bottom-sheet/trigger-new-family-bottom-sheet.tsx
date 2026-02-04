@@ -8,6 +8,7 @@ import Message from "@/components/icons/bottom-sheet/message";
 import Pin from "@/components/icons/bottom-sheet/pin";
 import Users from "@/components/icons/bottom-sheet/users";
 import { useAppTheme } from "@/contexts/app-theme-context";
+import { supabase } from "@/lib/supabase";
 import { Avatar, BottomSheet, cn, RadioGroup } from "heroui-native";
 import { useState } from "react";
 import { View } from "react-native";
@@ -51,13 +52,32 @@ export function TriggerNewFamilyBottomSheet() {
       ),
     },
   ];
-  const handleNext = () => {
+  const handleNext = async () => {
     if (selectedOption == null) return;
-    setIsOpen(false);
     if (selectedOption === "join") {
       setJoinDialogOpen(true);
+    } else {
+      const { data, error } = await supabase.rpc("create_family");
+
+      if (error) {
+        console.error(error);
+      } else {
+        // {
+        //   "id": "24d2bdd0-5f74-482e-a629-d235c33b1c1a",
+        //   "owner_id": "26c72634-0fdb-4660-b4c9-c1e6822f98d5",
+        //   "invite_code": "FCC25ADC18",
+        //   "is_archived": false,
+        //   "archived_at": null,
+        //   "created_at": "2026-02-04T02:43:55.51066+00:00"
+        // }
+        console.log(
+          "[CREATE FAMILY] Successfully created family",
+          JSON.stringify(data, null, 2)
+        );
+      }
     }
     // create: leave for now
+    setIsOpen(false);
   };
 
   return (

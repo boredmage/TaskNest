@@ -16,6 +16,7 @@ import {
   KeyboardProvider,
 } from "react-native-keyboard-controller";
 import "../../global.css";
+import { useFamilyStore } from "../stores/family-store";
 import { useProfileStore } from "../stores/profile-store";
 
 SplashScreen.setOptions({
@@ -34,6 +35,7 @@ const AppContent = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const { fetchProfile, clearProfile } = useProfileStore();
+  const { fetchFamily, clearFamily } = useFamilyStore();
 
   const contentWrapper = useCallback(
     (children: React.ReactNode) => (
@@ -54,9 +56,9 @@ const AppContent = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
-      // Prefetch profile when session is available
       if (session) {
         fetchProfile();
+        fetchFamily();
       }
     });
 
@@ -67,11 +69,11 @@ const AppContent = () => {
       setSession(session);
       if (session !== null) {
         setLoading(false);
-        // Prefetch profile when user logs in
         fetchProfile();
+        fetchFamily();
       } else {
-        // Clear profile when user logs out
         clearProfile();
+        clearFamily();
       }
     });
 
