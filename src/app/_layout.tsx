@@ -2,6 +2,7 @@ import { AppThemeProvider } from "@/contexts/app-theme-context";
 import "@/i18n";
 import i18n from "@/i18n";
 import { supabase } from "@/lib/supabase";
+import { registerForPushNotificationsAsync } from "@/utils/registerForPushNotificationsAsync";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Session } from "@supabase/supabase-js";
 import * as Notifications from "expo-notifications";
@@ -41,6 +42,21 @@ AppState.addEventListener("change", (state) => {
   }
 });
 
+async function savePushTokenForUser(userId: string, token: string) {
+  const { error } = await supabase.from("user_push_tokens").upsert(
+    {
+      user_id: userId,
+      token,
+      platform: "expo",
+    },
+    { onConflict: "user_id,token" }
+  );
+
+  if (error) {
+    console.error("Failed to save push token", error);
+  }
+}
+
 const AppContent = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
@@ -75,8 +91,25 @@ const AppContent = () => {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
+
+      if (
+        (event === "INITIAL_SESSION" || event === "SIGNED_IN") &&
+        session !== null
+      ) {
+        if (session.user) {
+          try {
+            const token = await registerForPushNotificationsAsync();
+            if (token) {
+              await savePushTokenForUser(session.user.id, token);
+            }
+          } catch (e) {
+            console.warn("Push notification registration failed", e);
+          }
+        }
+      }
+
       if (session !== null) {
         setLoading(false);
         fetchProfile();

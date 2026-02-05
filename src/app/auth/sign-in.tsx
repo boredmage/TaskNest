@@ -3,27 +3,11 @@ import Eye from "@/components/icons/eye";
 import EyeSlash from "@/components/icons/eye-slash";
 import { useAppTheme } from "@/contexts/app-theme-context";
 import { supabase } from "@/lib/supabase";
-import { registerForPushNotificationsAsync } from "@/utils/registerForPushNotificationsAsync";
 import { AuthError } from "@supabase/supabase-js";
 import { Link, useRouter } from "expo-router";
 import { Spinner, TextField, Toast, useToast } from "heroui-native";
 import React, { useState } from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
-
-async function savePushTokenForUser(userId: string, token: string) {
-  const { error } = await supabase.from("user_push_tokens").upsert(
-    {
-      user_id: userId,
-      token,
-      platform: "expo",
-    },
-    { onConflict: "user_id,token" }
-  );
-
-  if (error) {
-    console.error("Failed to save push token", error);
-  }
-}
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -52,24 +36,13 @@ const SignIn = () => {
   const signInWithEmail = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
       });
 
       if (error) {
         throw error;
-      }
-
-      if (data.user) {
-        try {
-          const token = await registerForPushNotificationsAsync();
-          if (token) {
-            await savePushTokenForUser(data.user.id, token);
-          }
-        } catch (e) {
-          console.warn("Push notification registration failed", e);
-        }
       }
 
       router.replace("/");
