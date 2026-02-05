@@ -4,6 +4,7 @@ import i18n from "@/i18n";
 import { supabase } from "@/lib/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Session } from "@supabase/supabase-js";
+import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
@@ -21,6 +22,15 @@ import { useProfileStore } from "../stores/profile-store";
 
 SplashScreen.setOptions({
   fade: true,
+});
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
 });
 
 AppState.addEventListener("change", (state) => {

@@ -62,6 +62,15 @@ const Settings = () => {
 
   const handleSignOut = async () => {
     await AsyncStorage.removeItem(UPDATE_PROFILE_REDIRECT_KEY);
+    const { error } = await supabase
+      .from("user_push_tokens")
+      .delete()
+      .eq("user_id", profile?.id);
+
+    if (error) {
+      console.error("Failed to delete push token", error);
+    }
+
     await supabase.auth.signOut();
     clearProfile();
   };

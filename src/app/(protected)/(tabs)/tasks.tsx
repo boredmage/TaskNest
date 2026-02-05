@@ -12,6 +12,24 @@ import { useTranslation } from "react-i18next";
 import { FlatList, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+export const EmptyTasks = () => {
+  return (
+    <View className="flex-1 items-center justify-center gap-2.5">
+      <Text className="text-text-day dark:text-text-night text-2xl font-semibold">
+        No Tasks Yet
+      </Text>
+      <Text className="text-hint max-w-72 text-center text-base">
+        You don't have any tasks right now. Create a new one to get started!
+      </Text>
+      <Link href="/new-task" asChild>
+        <CustomButton size="sm" className="px-6">
+          Create
+        </CustomButton>
+      </Link>
+    </View>
+  );
+};
+
 const Tasks = () => {
   const { t } = useTranslation();
   const { isDark } = useAppTheme();
@@ -43,28 +61,13 @@ const Tasks = () => {
         </View>
 
         <FlatList
-          data={getRandomActivities(4)}
+          data={getRandomActivities(0)}
           renderItem={({ item }) => <ActivityCard {...item} />}
           keyExtractor={(item) => item.title}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
           contentContainerClassName="gap-3 grow pb-24 "
-          ListEmptyComponent={
-            <View className="flex-1 items-center justify-center gap-2.5 pb-20">
-              <Text className="text-text-day dark:text-text-night text-2xl font-semibold">
-                No Tasks Yet
-              </Text>
-              <Text className="text-hint max-w-72 text-center text-base">
-                You don't have any tasks right now. Create a new one to get
-                started!
-              </Text>
-              <Link href="/new-task" asChild>
-                <CustomButton size="sm" className="px-6">
-                  Create
-                </CustomButton>
-              </Link>
-            </View>
-          }
+          ListEmptyComponent={<EmptyTasks />}
           ListHeaderComponent={
             <View className="gap-3">
               <View>

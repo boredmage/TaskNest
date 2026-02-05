@@ -1,39 +1,16 @@
 import PlusIcon from "@/components/icons/plus";
+import User from "@/components/icons/user";
 import { useAppTheme } from "@/contexts/app-theme-context";
 import WithArrowBack from "@/layout/with-arrow-back";
+import { getAvatarUrl } from "@/lib/util";
+import { useFamilyStore } from "@/stores/family-store";
 import { Avatar } from "heroui-native";
 import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
-const MEMBERS = [
-  {
-    id: "1",
-    name: "Emma",
-    role: "owner",
-    avatarUri: "https://i.pravatar.cc/96?img=1",
-  },
-  {
-    id: "2",
-    name: "Dad",
-    role: "can edit",
-    avatarUri: "https://i.pravatar.cc/96?img=12",
-  },
-  {
-    id: "3",
-    name: "Mom",
-    role: "can edit",
-    avatarUri: "https://i.pravatar.cc/96?img=5",
-  },
-  {
-    id: "4",
-    name: "Alex",
-    role: "can edit",
-    avatarUri: "https://i.pravatar.cc/96?img=11",
-  },
-] as const;
-
 const FamilyMembers = () => {
   const { isDark } = useAppTheme();
+  const { members } = useFamilyStore();
 
   return (
     <WithArrowBack
@@ -57,7 +34,7 @@ const FamilyMembers = () => {
         contentContainerClassName="gap-2 pt-4"
         showsVerticalScrollIndicator={false}
       >
-        {MEMBERS.map((member) => (
+        {members.map((member) => (
           <View
             key={member.id}
             className="bg-primary-day dark:bg-primary-night flex-row items-center rounded-xl p-2.5 px-4"
@@ -66,14 +43,24 @@ const FamilyMembers = () => {
               alt={member.name}
               className="bg-transparent-day dark:bg-transparent-night size-14 shrink-0"
             >
-              <Avatar.Image source={{ uri: member.avatarUri }} />
-              <Avatar.Fallback color="accent" />
+              {member.avatar_url ? (
+                <Avatar.Image
+                  source={{
+                    uri: getAvatarUrl(member.avatar_url) ?? undefined,
+                  }}
+                />
+              ) : null}
+              <Avatar.Fallback color="accent">
+                <User width={20} height={20} color="#A0A0A0" />
+              </Avatar.Fallback>
             </Avatar>
             <View className="ml-4 flex-1">
               <Text className="text-text-day dark:text-text-night text-base font-semibold">
                 {member.name}
               </Text>
-              <Text className="text-hint mt-0.5 text-sm">{member.role}</Text>
+              <Text className="text-hint mt-0.5 text-sm capitalize">
+                {member.role}
+              </Text>
             </View>
           </View>
         ))}

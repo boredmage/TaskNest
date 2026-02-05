@@ -12,9 +12,11 @@ import { SearchField } from "@/components/search-field";
 import { useAppTheme } from "@/contexts/app-theme-context";
 import { UPDATE_PROFILE_REDIRECT_KEY } from "@/lib/constant";
 import { getRandomActivities } from "@/mock-data";
+import { useFamilyStore } from "@/stores/family-store";
 import { useProfileStore } from "@/stores/profile-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
+import { Spinner } from "heroui-native";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -25,6 +27,22 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { EmptyTasks } from "./tasks";
+
+const NoFamilyView = () => {
+  return (
+    <View className="mb-24 flex-1 items-center justify-center gap-2.5">
+      <Text className="text-text-day dark:text-text-night text-2xl font-semibold">
+        🏡 No Family Yet
+      </Text>
+      <Text className="text-hint max-w-72 text-center text-base">
+        To get started, create your own or join an existing one using a family
+        code.
+      </Text>
+      <TriggerNewFamilyBottomSheet />
+    </View>
+  );
+};
 
 const Family = () => {
   const { t } = useTranslation();
@@ -32,6 +50,7 @@ const Family = () => {
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
   const activities = getRandomActivities(0);
   const { profile, loading } = useProfileStore();
+  const { family, loading: familyLoading, fetchFamily } = useFamilyStore();
   const handleFilterChange = (filter: FilterKey) => {
     setActiveFilter(filter);
   };
@@ -88,62 +107,57 @@ const Family = () => {
 
         <SearchField />
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerClassName="gap-2 py-1"
-          className="-mx-4 shrink-0 px-4"
-        >
-          <CategoryCard
-            title="Household"
-            iconBackground="#006aff26"
-            icon={<HomeIcon />}
-          />
-          <CategoryCard
-            title="Travel"
-            iconBackground="#3cc70026"
-            icon={<PlaneIcon />}
-          />
-          <CategoryCard
-            title="Shopping"
-            iconBackground="#ff48e726"
-            icon={<BagIcon />}
-          />
-          <CategoryCard
-            title="Health"
-            iconBackground="#0bcf8426"
-            icon={<MedicalIcon />}
-          />
-          <CategoryCard
-            title="Pets"
-            iconBackground="#f59c3026"
-            icon={<PetIcon />}
-          />
-        </ScrollView>
+        <View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerClassName="gap-2 py-1"
+            className="-mx-4 h-fit shrink-0 flex-row px-4"
+          >
+            <CategoryCard
+              title="Household"
+              iconBackground="#006aff26"
+              icon={<HomeIcon />}
+            />
+            <CategoryCard
+              title="Travel"
+              iconBackground="#3cc70026"
+              icon={<PlaneIcon />}
+            />
+            <CategoryCard
+              title="Shopping"
+              iconBackground="#ff48e726"
+              icon={<BagIcon />}
+            />
+            <CategoryCard
+              title="Health"
+              iconBackground="#0bcf8426"
+              icon={<MedicalIcon />}
+            />
+            <CategoryCard
+              title="Pets"
+              iconBackground="#f59c3026"
+              icon={<PetIcon />}
+            />
+          </ScrollView>
+        </View>
 
-        <FlatList
-          data={activities}
-          renderItem={({ item }) => <PremiumActivityCard {...item} />}
-          keyExtractor={(item) => item.title}
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-          contentContainerClassName="gap-3 grow pb-24"
-          ListEmptyComponent={
-            <View className="flex-1 items-center justify-center gap-2.5 pb-20">
-              <Text className="text-text-day dark:text-text-night text-2xl font-semibold">
-                🏡 No Family Yet
-              </Text>
-              <Text className="text-hint max-w-72 text-center text-base">
-                To get started, create your own or join an existing one using a
-                family code.
-              </Text>
-
-              <TriggerNewFamilyBottomSheet />
-            </View>
-          }
-          ListHeaderComponent={
-            activities.length > 0 ? (
-              <View className="gap-3">
+        {familyLoading ? (
+          <View className="mb-24 flex-1 items-center justify-center">
+            <Spinner size="lg" color="#72d000" className="self-center" />
+          </View>
+        ) : family ? (
+          <FlatList
+            bounces={false}
+            data={activities}
+            renderItem={({ item }) => <PremiumActivityCard {...item} />}
+            keyExtractor={(item) => item.title}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+            contentContainerClassName="gap-3 grow pb-24"
+            ListEmptyComponent={<EmptyTasks />}
+            ListHeaderComponent={
+              <View className="gap-2">
                 <View>
                   <Text className="text-text-day dark:text-text-night text-2xl font-semibold">
                     Tasks
@@ -152,7 +166,7 @@ const Family = () => {
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
-                  contentContainerClassName="gap-2 py-1"
+                  contentContainerClassName="gap-2"
                   className="-mx-4 px-4"
                 >
                   <FilterChip
@@ -177,9 +191,11 @@ const Family = () => {
                   />
                 </ScrollView>
               </View>
-            ) : null
-          }
-        />
+            }
+          />
+        ) : (
+          <NoFamilyView />
+        )}
       </View>
     </SafeAreaView>
   );

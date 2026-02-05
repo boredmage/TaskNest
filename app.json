@@ -33,6 +33,15 @@
           "resizeMode": "contain"
         }
       ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification_icon.png",
+          "color": "#72d000",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
+        }
+      ],
       "expo-localization",
       "expo-secure-store",
       "@react-native-community/datetimepicker"
@@ -48,7 +57,8 @@
       }
     },
     "android": {
-      "package": "com.qudusayo.tasknest"
+      "package": "com.qudusayo.tasknest",
+      "googleServicesFile": "./google-services.json"
     },
     "extra": {
       "router": {},

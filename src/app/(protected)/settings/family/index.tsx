@@ -7,6 +7,8 @@ import ChevronRight from "@/components/icons/chevron-right";
 import PlusIcon from "@/components/icons/plus";
 import User from "@/components/icons/user";
 import WithArrowBack from "@/layout/with-arrow-back";
+import { getAvatarUrl } from "@/lib/util";
+import { useFamilyStore } from "@/stores/family-store";
 import { Link } from "expo-router";
 import { Avatar } from "heroui-native";
 import React from "react";
@@ -53,6 +55,8 @@ const CATEGORIES = [
 
 const FamilySettings = () => {
   const { t } = useTranslation();
+  const { members } = useFamilyStore();
+
   return (
     <WithArrowBack>
       <ScrollView
@@ -113,18 +117,19 @@ const FamilySettings = () => {
             >
               <PlusIcon width={24} height={24} stroke="#A0A0A0" />
             </Pressable>
-            {[
-              "",
-              "https://i.pravatar.cc/96?img=5",
-              "https://i.pravatar.cc/96?img=9",
-              "https://i.pravatar.cc/96?img=11",
-            ].map((uri, i) => (
+            {members.map((member) => (
               <Avatar
-                key={uri}
-                alt={`Member ${i + 1}`}
+                key={member.id}
+                alt={member.name}
                 className="bg-transparent-day dark:bg-transparent-night size-14"
               >
-                <Avatar.Image source={{ uri }} />
+                {member.avatar_url ? (
+                  <Avatar.Image
+                    source={{
+                      uri: getAvatarUrl(member.avatar_url) ?? undefined,
+                    }}
+                  />
+                ) : null}
                 <Avatar.Fallback color="accent">
                   <User width={20} height={20} color="#A0A0A0" />
                 </Avatar.Fallback>
