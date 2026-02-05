@@ -6,10 +6,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import User from "@/components/icons/user";
 import { useAppTheme } from "@/contexts/app-theme-context";
-import { UPDATE_PROFILE_REDIRECT_KEY } from "@/lib/constant";
 import { supabase } from "@/lib/supabase";
 import { getAvatarUrl } from "@/lib/util";
 import { useProfileStore } from "@/stores/profile-store";
+import {
+  PN_REGISTERED_STORAGE_KEY,
+  UPDATE_PROFILE_REDIRECT_KEY,
+} from "@/utils/constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Avatar } from "heroui-native";
 import { CustomSwitch } from "../../../components/custom-switch";
@@ -62,6 +65,7 @@ const Settings = () => {
 
   const handleSignOut = async () => {
     await AsyncStorage.removeItem(UPDATE_PROFILE_REDIRECT_KEY);
+    await AsyncStorage.removeItem(PN_REGISTERED_STORAGE_KEY);
     const { error } = await supabase
       .from("user_push_tokens")
       .delete()

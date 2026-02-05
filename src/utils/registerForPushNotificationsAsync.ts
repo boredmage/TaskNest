@@ -12,6 +12,10 @@ export async function registerForPushNotificationsAsync(): Promise<
   };
 
   return (async () => {
+    if (!Device.isDevice) {
+      return;
+    }
+
     if (Platform.OS === "android") {
       await Notifications.setNotificationChannelAsync("default", {
         name: "default",
@@ -21,11 +25,6 @@ export async function registerForPushNotificationsAsync(): Promise<
       });
     }
 
-    if (!Device.isDevice) {
-      handleError("Must use physical device for push notifications");
-      return;
-    }
-
     const { status: existingStatus } =
       await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
@@ -33,6 +32,7 @@ export async function registerForPushNotificationsAsync(): Promise<
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
+
     if (finalStatus !== "granted") {
       handleError(
         "Permission not granted to get push token for push notification!"

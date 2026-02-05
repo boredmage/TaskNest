@@ -2,6 +2,7 @@ import { AppThemeProvider } from "@/contexts/app-theme-context";
 import "@/i18n";
 import i18n from "@/i18n";
 import { supabase } from "@/lib/supabase";
+import { PN_REGISTERED_STORAGE_KEY } from "@/utils/constants";
 import { registerForPushNotificationsAsync } from "@/utils/registerForPushNotificationsAsync";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Session } from "@supabase/supabase-js";
@@ -96,17 +97,23 @@ const AppContent = () => {
 
       if (
         (event === "INITIAL_SESSION" || event === "SIGNED_IN") &&
-        session !== null
+        session !== null &&
+        session.user
       ) {
-        if (session.user) {
-          try {
+        try {
+          const alreadyRegistered = await AsyncStorage.getItem(
+            PN_REGISTERED_STORAGE_KEY
+          );
+
+          if (!alreadyRegistered) {
             const token = await registerForPushNotificationsAsync();
             if (token) {
               await savePushTokenForUser(session.user.id, token);
+              await AsyncStorage.setItem(PN_REGISTERED_STORAGE_KEY, "true");
             }
-          } catch (e) {
-            console.warn("Push notification registration failed", e);
           }
+        } catch (e) {
+          console.warn("Push notification registration failed", e);
         }
       }
 

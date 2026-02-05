@@ -1,0 +1,2 @@
+export const UPDATE_PROFILE_REDIRECT_KEY = "updateProfileRedirectDone";
+export const PN_REGISTERED_STORAGE_KEY = "PUSH_NOTIFICATION_REGISTERED";
