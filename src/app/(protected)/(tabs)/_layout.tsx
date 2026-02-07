@@ -39,7 +39,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="news"
         options={{
-          title: t("tabs.news"),
+          title: t("tabs.activity"),
           tabBarLabel: () => <TabLabel label="News" />,
         }}
       />

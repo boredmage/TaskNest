@@ -1,6 +1,8 @@
 import { CustomButton } from "@/components/custom-button";
-import { Dialog, TextField } from "heroui-native";
-import { View } from "react-native";
+import { supabase } from "@/lib/supabase";
+import { Checkbox, cn, Dialog, Spinner, TextField } from "heroui-native";
+import { useState } from "react";
+import { Alert, Text, View } from "react-native";
 import { DialogBlurBackdrop } from "./dialog-blur-backdrop";
 
 type JoinFamilyDialogProps = {
@@ -12,6 +14,31 @@ export function JoinFamilyDialog({
   open,
   onOpenChange,
 }: JoinFamilyDialogProps) {
+  const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [isCodeValid, setIsCodeValid] = useState(false);
+
+  const handleSubmit = async () => {
+    console.log("[JOIN FAMILY] Submitting code:", code);
+    try {
+      setLoading(true);
+
+      const { data, error } = await supabase.rpc("request_to_join_family", {
+        p_invite_code: code,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setIsCodeValid(true);
+    } catch (error) {
+      console.error("[JOIN FAMILY] Error:", (error as Error).message);
+      Alert.alert("Error", (error as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <Dialog isOpen={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -29,18 +56,58 @@ export function JoinFamilyDialog({
             </Dialog.Description>
           </View>
 
-          <TextField isRequired>
-            <TextField.Input
-              placeholder="Enter Code"
-              className="bg-background-day dark:bg-background-night border-main text-main placeholder:text-main-light active:border-main focus:border-main mt-6 h-12 rounded-xl border-2 text-base leading-tight uppercase shadow-none"
-            />
-            <TextField.Description className="text-hint my-2 mb-4 text-xs">
-              Haven't received the code? Check your spam folder or ask a family
-              member to resend it.
-            </TextField.Description>
+          <TextField
+            isRequired
+            isDisabled={loading || isCodeValid}
+            className="my-4"
+          >
+            <View className="w-full flex-row items-center">
+              <TextField.Input
+                value={code}
+                onChangeText={setCode}
+                placeholder="Enter Code"
+                className="bg-background-day dark:bg-background-night border-main placeholder:text-main-light active:border-main focus:border-main h-12 flex-1 rounded-xl border-2 text-base leading-tight uppercase shadow-none"
+                maxLength={10}
+              />
+              <View className="absolute right-4 items-center justify-center">
+                {loading && (
+                  <Spinner
+                    color="#72D000"
+                    size="md"
+                    className="absolute right-0 z-50"
+                  />
+                )}
+                <Checkbox
+                  isSelected={isCodeValid}
+                  variant="secondary"
+                  className={cn(
+                    "size-6 rounded-full border-2 shadow-none",
+                    isCodeValid
+                      ? "bg-main border-main"
+                      : "bg-primary-day dark:bg-primary-night border-transparent-day dark:border-transparent-night"
+                  )}
+                >
+                  <Checkbox.Indicator className="bg-transparent" />
+                </Checkbox>
+              </View>
+            </View>
           </TextField>
+          <Text
+            className={cn(
+              "-mt-2 mb-4 text-xs",
+              isCodeValid ? "text-main" : "text-hint"
+            )}
+          >
+            {isCodeValid
+              ? "Your request has been submitted. Please wait for the family admin to approve your request."
+              : "Haven't received the code? Check your spam folder or ask a family member to resend it."}
+          </Text>
 
-          <CustomButton className="px-6" onPress={() => onOpenChange(false)}>
+          <CustomButton
+            className="px-6"
+            onPress={handleSubmit}
+            isDisabled={loading || isCodeValid}
+          >
             Submit
           </CustomButton>
         </Dialog.Content>

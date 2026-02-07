@@ -27,7 +27,6 @@ export default function ProtectedLayout() {
           headerShown: false,
         }}
       />
-      <Stack.Screen name="*" />
     </Stack>
   );
 }

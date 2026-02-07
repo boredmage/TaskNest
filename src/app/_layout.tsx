@@ -2,6 +2,7 @@ import { AppThemeProvider } from "@/contexts/app-theme-context";
 import "@/i18n";
 import i18n from "@/i18n";
 import { supabase } from "@/lib/supabase";
+import { useNotificationsStore } from "@/stores/notifications-store";
 import { PN_REGISTERED_STORAGE_KEY } from "@/utils/constants";
 import { registerForPushNotificationsAsync } from "@/utils/registerForPushNotificationsAsync";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -63,6 +64,8 @@ const AppContent = () => {
   const [loading, setLoading] = useState(true);
   const { fetchProfile, clearProfile } = useProfileStore();
   const { fetchFamily, clearFamily } = useFamilyStore();
+  const { fetchNotifications, clear: clearNotifications } =
+    useNotificationsStore();
 
   const contentWrapper = useCallback(
     (children: React.ReactNode) => (
@@ -86,6 +89,7 @@ const AppContent = () => {
       if (session) {
         fetchProfile();
         fetchFamily();
+        fetchNotifications();
       }
     });
 
@@ -121,9 +125,11 @@ const AppContent = () => {
         setLoading(false);
         fetchProfile();
         fetchFamily();
+        fetchNotifications();
       } else {
         clearProfile();
         clearFamily();
+        clearNotifications();
       }
     });
 

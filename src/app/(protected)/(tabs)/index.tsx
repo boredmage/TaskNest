@@ -1,5 +1,6 @@
 import { TriggerNewFamilyBottomSheet } from "@/components/bottom-sheet/trigger-new-family-bottom-sheet";
 import CategoryCard from "@/components/category-card";
+import { FamilyCreatedSuccessDialog } from "@/components/dialog/family-created-success";
 import { FilterChip, FilterKey } from "@/components/filter-chip";
 import BagIcon from "@/components/icons/categories/bag";
 import HomeIcon from "@/components/icons/categories/home";
@@ -29,7 +30,11 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { EmptyTasks } from "./tasks";
 
-const NoFamilyView = () => {
+type NoFamilyViewProps = {
+  onFamilyCreated?: (inviteCode: string | null) => void;
+};
+
+const NoFamilyView = ({ onFamilyCreated }: NoFamilyViewProps) => {
   return (
     <View className="mb-24 flex-1 items-center justify-center gap-2.5">
       <Text className="text-text-day dark:text-text-night text-2xl font-semibold">
@@ -39,7 +44,7 @@ const NoFamilyView = () => {
         To get started, create your own or join an existing one using a family
         code.
       </Text>
-      <TriggerNewFamilyBottomSheet />
+      <TriggerNewFamilyBottomSheet onFamilyCreated={onFamilyCreated} />
     </View>
   );
 };
@@ -50,7 +55,11 @@ const Family = () => {
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
   const activities = getRandomActivities(0);
   const { profile, loading } = useProfileStore();
-  const { family, loading: familyLoading, fetchFamily } = useFamilyStore();
+  const { family, loading: familyLoading, error } = useFamilyStore();
+  const [familyCreatedDialogOpen, setFamilyCreatedDialogOpen] = useState(false);
+  const [createdFamilyCode, setCreatedFamilyCode] = useState<string | null>(
+    null
+  );
   const handleFilterChange = (filter: FilterKey) => {
     setActiveFilter(filter);
   };
@@ -194,8 +203,18 @@ const Family = () => {
             }
           />
         ) : (
-          <NoFamilyView />
+          <NoFamilyView
+            onFamilyCreated={(inviteCode) => {
+              setCreatedFamilyCode(inviteCode);
+              setFamilyCreatedDialogOpen(true);
+            }}
+          />
         )}
+        <FamilyCreatedSuccessDialog
+          open={familyCreatedDialogOpen}
+          onOpenChange={setFamilyCreatedDialogOpen}
+          familyCode={createdFamilyCode ?? ""}
+        />
       </View>
     </SafeAreaView>
   );

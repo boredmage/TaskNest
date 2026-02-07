@@ -9,7 +9,8 @@ import Pin from "@/components/icons/bottom-sheet/pin";
 import Users from "@/components/icons/bottom-sheet/users";
 import { useAppTheme } from "@/contexts/app-theme-context";
 import { supabase } from "@/lib/supabase";
-import { Avatar, BottomSheet, cn, RadioGroup } from "heroui-native";
+import { useFamilyStore } from "@/stores/family-store";
+import { Avatar, BottomSheet, cn, RadioGroup, Spinner } from "heroui-native";
 import { useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -24,12 +25,20 @@ const iconsMap = [
   { id: 5, icon: <Message color="white" />, bg: "#7559EA" },
 ];
 
-export function TriggerNewFamilyBottomSheet() {
+type TriggerNewFamilyBottomSheetProps = {
+  onFamilyCreated?: (inviteCode: string | null) => void;
+};
+
+export function TriggerNewFamilyBottomSheet({
+  onFamilyCreated,
+}: TriggerNewFamilyBottomSheetProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<FamilyOption>(null);
   const [joinDialogOpen, setJoinDialogOpen] = useState(false);
   const insets = useSafeAreaInsets();
   const { isDark } = useAppTheme();
+  const [loading, setLoading] = useState(false);
+  const { fetchFamily: refetchFamily } = useFamilyStore();
 
   const familyOptions: Array<{
     value: "create" | "join";
@@ -52,31 +61,33 @@ export function TriggerNewFamilyBottomSheet() {
       ),
     },
   ];
+
   const handleNext = async () => {
     if (selectedOption == null) return;
     if (selectedOption === "join") {
       setJoinDialogOpen(true);
     } else {
-      const { data, error } = await supabase.rpc("create_family");
+      setLoading(true);
+      try {
+        const { data, error } = await supabase.rpc("create_family");
 
-      if (error) {
+        if (error) {
+          throw error;
+        }
+
+        const inviteCode =
+          (data as { invite_code?: string } | null)?.invite_code ?? null;
+
+        if (onFamilyCreated) {
+          onFamilyCreated(inviteCode);
+          refetchFamily();
+        }
+      } catch (error) {
         console.error(error);
-      } else {
-        // {
-        //   "id": "24d2bdd0-5f74-482e-a629-d235c33b1c1a",
-        //   "owner_id": "26c72634-0fdb-4660-b4c9-c1e6822f98d5",
-        //   "invite_code": "FCC25ADC18",
-        //   "is_archived": false,
-        //   "archived_at": null,
-        //   "created_at": "2026-02-04T02:43:55.51066+00:00"
-        // }
-        console.log(
-          "[CREATE FAMILY] Successfully created family",
-          JSON.stringify(data, null, 2)
-        );
+      } finally {
+        setLoading(false);
       }
     }
-    // create: leave for now
     setIsOpen(false);
   };
 
@@ -170,10 +181,10 @@ export function TriggerNewFamilyBottomSheet() {
 
           <CustomButton
             className="rounded-2xl px-6"
-            isDisabled={selectedOption == null}
+            isDisabled={selectedOption == null || loading}
             onPress={handleNext}
           >
-            Next
+            {loading ? <Spinner color="#72D000" size="md" /> : "Next"}
           </CustomButton>
         </BottomSheet.Content>
       </BottomSheet.Portal>
