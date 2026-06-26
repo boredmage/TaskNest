@@ -73,6 +73,7 @@ export type ActivityCardProps = {
   status?: StatusEnum;
   onToggleComplete?: () => void;
   onPress?: () => void;
+  onLongPress?: () => void;
 };
 
 export function ActivityCard({
@@ -83,6 +84,7 @@ export function ActivityCard({
   status = StatusEnum.TODO,
   onToggleComplete,
   onPress,
+  onLongPress,
 }: ActivityCardProps) {
   const { isDark } = useAppTheme();
   const [isCompleted, setIsCompleted] = useState(
@@ -90,6 +92,13 @@ export function ActivityCard({
   );
   const [titleLayout, setTitleLayout] = useState({ width: 0, height: 0 });
   const strikeProgress = useSharedValue(0);
+
+  // Keep local completion state in sync with the store-driven status prop so
+  // out-of-band changes (other screens, pull-to-refresh, another member) don't
+  // leave a stale checkbox that inverts the next toggle.
+  useEffect(() => {
+    setIsCompleted(status === StatusEnum.COMPLETED);
+  }, [status]);
 
   useEffect(() => {
     strikeProgress.value = withTiming(isCompleted ? 1 : 0, {
@@ -117,6 +126,7 @@ export function ActivityCard({
   return (
     <Pressable
       onPress={onPress}
+      onLongPress={onLongPress}
       className="bg-primary-day dark:bg-primary-night rounded-2xl p-4 active:opacity-95"
       style={{
         shadowColor: "#000",

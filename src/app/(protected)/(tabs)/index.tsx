@@ -11,14 +11,18 @@ import SettingsOutline from "@/components/icons/settings-outline";
 import PremiumActivityCard from "@/components/premium-activity-card";
 import { SearchField } from "@/components/search-field";
 import { useAppTheme } from "@/contexts/app-theme-context";
-import { getRandomActivities } from "@/mock-data";
 import { useFamilyStore } from "@/stores/family-store";
 import { useProfileStore } from "@/stores/profile-store";
+import {
+  assigneeAvatarUris,
+  assigneeNames,
+  useTodosStore,
+} from "@/stores/todos-store";
 import { UPDATE_PROFILE_REDIRECT_KEY } from "@/utils/constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { Spinner } from "heroui-native";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FlatList,
@@ -53,9 +57,23 @@ const Family = () => {
   const { t } = useTranslation();
   const { isDark } = useAppTheme();
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
-  const activities = getRandomActivities(0);
   const { profile, loading } = useProfileStore();
-  const { family, loading: familyLoading, error } = useFamilyStore();
+  const { family, loading: familyLoading, members } = useFamilyStore();
+  const { todos, loading: todosLoading, fetchTodos } = useTodosStore();
+
+  const activities = useMemo(() => {
+    const familyTodos = todos.filter((t) => t.scope === "family");
+    switch (activeFilter) {
+      case "todo":
+        return familyTodos.filter((t) => t.status === "in_progress");
+      case "completed":
+        return familyTodos.filter((t) => t.status === "completed");
+      case "overdue":
+        return familyTodos.filter((t) => t.status === "overdue");
+      default:
+        return familyTodos.filter((t) => t.status !== "archived");
+    }
+  }, [todos, activeFilter]);
   const [familyCreatedDialogOpen, setFamilyCreatedDialogOpen] = useState(false);
   const [createdFamilyCode, setCreatedFamilyCode] = useState<string | null>(
     null
@@ -159,10 +177,24 @@ const Family = () => {
           <FlatList
             bounces={false}
             data={activities}
-            renderItem={({ item }) => <PremiumActivityCard {...item} />}
-            keyExtractor={(item) => item.title}
+            renderItem={({ item }) => (
+              <PremiumActivityCard
+                title={item.title}
+                description={item.description ?? undefined}
+                dueDate={item.due_date ?? undefined}
+                assignedAvatarUris={assigneeAvatarUris(
+                  item.assignee_ids,
+                  members
+                )}
+                assignedNames={assigneeNames(item.assignee_ids, members)}
+                onPress={() => router.push("/todo")}
+              />
+            )}
+            keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
             showsHorizontalScrollIndicator={false}
+            refreshing={todosLoading}
+            onRefresh={fetchTodos}
             contentContainerClassName="gap-3 grow pb-24"
             ListEmptyComponent={<EmptyTasks />}
             ListHeaderComponent={

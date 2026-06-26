@@ -22,6 +22,7 @@ import {
 import "../../global.css";
 import { useFamilyStore } from "../stores/family-store";
 import { useProfileStore } from "../stores/profile-store";
+import { useTodosStore } from "../stores/todos-store";
 
 SplashScreen.setOptions({
   fade: true,
@@ -64,6 +65,7 @@ const AppContent = () => {
   const [loading, setLoading] = useState(true);
   const { fetchProfile, clearProfile } = useProfileStore();
   const { fetchFamily, clearFamily } = useFamilyStore();
+  const { fetchTodos, clear: clearTodos } = useTodosStore();
   const { fetchNotifications, clear: clearNotifications } =
     useNotificationsStore();
 
@@ -89,6 +91,7 @@ const AppContent = () => {
       if (session) {
         fetchProfile();
         fetchFamily();
+        fetchTodos();
         fetchNotifications();
       }
     });
@@ -125,10 +128,12 @@ const AppContent = () => {
         setLoading(false);
         fetchProfile();
         fetchFamily();
+        fetchTodos();
         fetchNotifications();
       } else {
         clearProfile();
         clearFamily();
+        clearTodos();
         clearNotifications();
       }
     });

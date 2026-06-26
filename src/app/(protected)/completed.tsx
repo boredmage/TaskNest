@@ -1,9 +1,11 @@
 import ActivityCard from "@/components/activity-card";
 import TrophyIcon from "@/components/icons/trophy-icon";
 import WithArrowBack from "@/layout/with-arrow-back";
-import { getRandomActivities } from "@/mock-data";
+import { promptTodoActions } from "@/lib/todo-actions";
+import { useFamilyStore } from "@/stores/family-store";
+import { assigneeAvatarUris, useTodosStore } from "@/stores/todos-store";
 import { StatusEnum } from "@/type";
-import React from "react";
+import React, { useMemo } from "react";
 import { FlatList, Text, View } from "react-native";
 
 function EmptyCompleted() {
@@ -24,22 +26,32 @@ function EmptyCompleted() {
 }
 
 const Completed = () => {
-  const completedActivities = getRandomActivities(4);
+  const { todos, loading, fetchTodos, toggleComplete } = useTodosStore();
+  const { members } = useFamilyStore();
+
+  const data = useMemo(
+    () => todos.filter((t) => t.status === "completed"),
+    [todos]
+  );
 
   return (
     <WithArrowBack title="Completed">
       <FlatList
-        data={completedActivities}
+        data={data}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(item, index) => `${item.title}-${index}`}
+        keyExtractor={(item) => item.id}
+        refreshing={loading}
+        onRefresh={fetchTodos}
         renderItem={({ item }) => (
           <ActivityCard
             title={item.title}
-            description={item.description}
-            dueDate={item.dueDate}
-            assignedAvatarUris={item.assignedAvatarUris ?? []}
+            description={item.description ?? undefined}
+            dueDate={item.due_date ?? undefined}
+            assignedAvatarUris={assigneeAvatarUris(item.assignee_ids, members)}
             status={StatusEnum.COMPLETED}
+            onToggleComplete={() => toggleComplete(item.id, false)}
+            onLongPress={() => promptTodoActions(item)}
           />
         )}
         ListEmptyComponent={EmptyCompleted}

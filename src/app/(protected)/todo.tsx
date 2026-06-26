@@ -2,10 +2,12 @@ import ActivityCard from "@/components/activity-card";
 import { CustomButton } from "@/components/custom-button";
 import FileIcon from "@/components/icons/file-icon";
 import WithArrowBack from "@/layout/with-arrow-back";
-import { getRandomActivities } from "@/mock-data";
+import { promptTodoActions } from "@/lib/todo-actions";
+import { useFamilyStore } from "@/stores/family-store";
+import { assigneeAvatarUris, useTodosStore } from "@/stores/todos-store";
 import { StatusEnum } from "@/type";
 import { Link } from "expo-router";
-import React from "react";
+import React, { useMemo } from "react";
 import { FlatList, Text, View } from "react-native";
 
 function EmptyTodos() {
@@ -28,20 +30,32 @@ function EmptyTodos() {
 }
 
 const Todos = () => {
+  const { todos, loading, fetchTodos, toggleComplete } = useTodosStore();
+  const { members } = useFamilyStore();
+
+  const data = useMemo(
+    () => todos.filter((t) => t.status === "in_progress"),
+    [todos]
+  );
+
   return (
     <WithArrowBack title="To Do">
       <FlatList
-        data={getRandomActivities(10)}
+        data={data}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(item, index) => `${item.title}-${index}`}
+        keyExtractor={(item) => item.id}
+        refreshing={loading}
+        onRefresh={fetchTodos}
         renderItem={({ item }) => (
           <ActivityCard
             title={item.title}
-            description={item.description}
-            dueDate={item.dueDate}
-            assignedAvatarUris={item.assignedAvatarUris ?? []}
+            description={item.description ?? undefined}
+            dueDate={item.due_date ?? undefined}
+            assignedAvatarUris={assigneeAvatarUris(item.assignee_ids, members)}
             status={StatusEnum.TODO}
+            onToggleComplete={() => toggleComplete(item.id, true)}
+            onLongPress={() => promptTodoActions(item)}
           />
         )}
         ListEmptyComponent={EmptyTodos}
