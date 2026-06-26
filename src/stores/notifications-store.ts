@@ -31,6 +31,11 @@ interface NotificationsStore {
 
   fetchNotifications: () => Promise<void>;
   markAsReadLocally: (id: string) => void;
+  /** Merge `patch` into a notification's `data` jsonb and mark it read (DB + local). */
+  patchNotificationData: (
+    id: string,
+    patch: Record<string, unknown>
+  ) => Promise<{ error: unknown }>;
   clear: () => void;
 }
 
@@ -80,6 +85,32 @@ export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
       n.id === id ? { ...n, read_at: n.read_at ?? new Date().toISOString() } : n
     );
     set({ notifications });
+  },
+
+  patchNotificationData: async (id, patch) => {
+    const current = get().notifications.find((n) => n.id === id);
+    const nextData = { ...(current?.raw?.data ?? {}), ...patch };
+    const nextReadAt = current?.read_at ?? new Date().toISOString();
+
+    // Optimistic local update
+    set({
+      notifications: get().notifications.map((n) =>
+        n.id === id
+          ? { ...n, read_at: nextReadAt, raw: { ...n.raw, data: nextData } }
+          : n
+      ),
+    });
+
+    const { error } = await supabase
+      .from("notifications")
+      .update({ data: nextData, read_at: nextReadAt })
+      .eq("id", id);
+
+    if (error) {
+      console.error("[NOTIFICATIONS] patch error:", error);
+      return { error };
+    }
+    return { error: null };
   },
 
   clear: () => {

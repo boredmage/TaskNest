@@ -12,7 +12,7 @@ import React, { useEffect, useState } from "react";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 import User from "../icons/user";
 
-const InviteNotification = ({
+const FamilyInviteNotification = ({
   notification,
 }: {
   notification: AppNotification;
@@ -26,45 +26,35 @@ const InviteNotification = ({
   const { fetchFamily: refreshFamily } = useFamilyStore();
   const { patchNotificationData } = useNotificationsStore();
 
-  const joinRequestId = notification.raw?.data?.request_id;
-  const isHandled =
-    notification.raw?.data?.approved || notification.raw?.data?.declined;
+  const inviteId = notification.raw?.data?.invite_id;
+  const isHandled = notification.raw?.data?.responded;
+  const accepted = notification.raw?.data?.accepted;
   const busy = acceptLoading || declineLoading;
 
-  const handleAccept = async () => {
-    if (busy || !joinRequestId) return;
-    setAcceptLoading(true);
+  const respond = async (accept: boolean) => {
+    if (busy || !inviteId) return;
+    if (accept) setAcceptLoading(true);
+    else setDeclineLoading(true);
     try {
-      const { error } = await supabase.rpc("handle_join_request_approval", {
-        p_join_request_id: joinRequestId,
+      const { error } = await supabase.rpc("respond_to_family_invite", {
+        p_invite_id: inviteId,
+        p_accept: accept,
       });
       if (error) {
-        console.error("[INVITE] handle_join_request_approval error:", error);
-        Alert.alert("Could not accept", error.message);
+        console.error("[FAMILY INVITE] respond error:", error);
+        Alert.alert("Something went wrong", error.message);
         return;
       }
-      await patchNotificationData(notification.id, { approved: true });
-      refreshFamily();
-      useTodosStore.getState().fetchTodos();
+      await patchNotificationData(notification.id, {
+        responded: true,
+        accepted: accept,
+      });
+      if (accept) {
+        refreshFamily();
+        useTodosStore.getState().fetchTodos();
+      }
     } finally {
       setAcceptLoading(false);
-    }
-  };
-
-  const handleDecline = async () => {
-    if (busy || !joinRequestId) return;
-    setDeclineLoading(true);
-    try {
-      const { error } = await supabase.rpc("decline_join_request", {
-        p_join_request_id: joinRequestId,
-      });
-      if (error) {
-        console.error("[INVITE] decline_join_request error:", error);
-        Alert.alert("Could not decline", error.message);
-        return;
-      }
-      await patchNotificationData(notification.id, { declined: true });
-    } finally {
       setDeclineLoading(false);
     }
   };
@@ -128,7 +118,7 @@ const InviteNotification = ({
               <Text className="text-text-day dark:text-text-night text-base font-semibold">
                 {initiatorName}{" "}
                 <Text className="text-hint font-normal">
-                  wants to join you.
+                  invited you to join their family.
                 </Text>
               </Text>
             </View>
@@ -143,15 +133,15 @@ const InviteNotification = ({
 
           {isHandled ? (
             <Text className="text-hint mt-2 text-sm">
-              {notification.raw?.data?.approved
-                ? "You accepted this request."
-                : "You declined this request."}
+              {accepted
+                ? "You joined this family."
+                : "You declined this invitation."}
             </Text>
           ) : (
             <View className="mt-3 flex-row gap-3">
               <TouchableOpacity
                 className="items-center justify-center rounded-xl bg-[#72D000] px-4 py-1 active:opacity-90"
-                onPress={handleAccept}
+                onPress={() => respond(true)}
                 disabled={busy}
               >
                 <Text className="text-sm font-semibold text-white">
@@ -160,7 +150,7 @@ const InviteNotification = ({
               </TouchableOpacity>
               <TouchableOpacity
                 className="bg-transparent-day dark:bg-transparent-night items-center justify-center rounded-xl border border-[#E5E5EA] px-4 py-1 active:opacity-90 dark:border-[#444444]"
-                onPress={handleDecline}
+                onPress={() => respond(false)}
                 disabled={busy}
               >
                 <Text className="text-text-day dark:text-text-night text-sm font-semibold">
@@ -175,4 +165,4 @@ const InviteNotification = ({
   );
 };
 
-export default InviteNotification;
+export default FamilyInviteNotification;

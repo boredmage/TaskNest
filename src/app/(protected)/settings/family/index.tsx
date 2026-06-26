@@ -1,3 +1,4 @@
+import { InviteFamilyMemberDialog } from "@/components/dialog/invite-family-member-dialog";
 import BagIcon from "@/components/icons/categories/bag";
 import HomeIcon from "@/components/icons/categories/home";
 import MedicalIcon from "@/components/icons/categories/medical";
@@ -9,9 +10,11 @@ import User from "@/components/icons/user";
 import WithArrowBack from "@/layout/with-arrow-back";
 import { getAvatarUrl } from "@/lib/util";
 import { useFamilyStore } from "@/stores/family-store";
+import { useProfileStore } from "@/stores/profile-store";
+import { countByCategory, useTodosStore } from "@/stores/todos-store";
 import { Link } from "expo-router";
 import { Avatar } from "heroui-native";
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
@@ -21,41 +24,44 @@ const CATEGORIES = [
     title: "Household",
     icon: HomeIcon,
     iconBackground: "#006aff26",
-    count: 5,
   },
   {
     id: "travel",
     title: "Travel",
     icon: PlaneIcon,
     iconBackground: "#3cc70026",
-    count: 1,
   },
   {
     id: "shopping",
     title: "Shopping",
     icon: BagIcon,
     iconBackground: "#ff48e726",
-    count: 3,
   },
   {
     id: "health",
     title: "Health",
     icon: MedicalIcon,
     iconBackground: "#0bcf8426",
-    count: 2,
   },
   {
     id: "pets",
     title: "Pets",
     icon: PetIcon,
     iconBackground: "#f59c3026",
-    count: 1,
   },
 ] as const;
 
 const FamilySettings = () => {
   const { t } = useTranslation();
-  const { members } = useFamilyStore();
+  const { members, family } = useFamilyStore();
+  const { profile } = useProfileStore();
+  const { todos } = useTodosStore();
+  const isOwner = !!family && !!profile && family.owner_id === profile.id;
+  const categoryCounts = useMemo(
+    () => countByCategory(todos.filter((t) => t.scope === "family")),
+    [todos]
+  );
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   return (
     <WithArrowBack>
@@ -85,7 +91,9 @@ const FamilySettings = () => {
                 <Text className="text-text-day dark:text-text-night ml-4 flex-1 text-base font-medium">
                   {item.title}
                 </Text>
-                <Text className="text-hint mr-2 text-base">{item.count}</Text>
+                <Text className="text-hint mr-2 text-base">
+                  {categoryCounts[item.id] ?? 0}
+                </Text>
                 <ChevronRight />
               </Pressable>
             );
@@ -109,14 +117,14 @@ const FamilySettings = () => {
             showsHorizontalScrollIndicator={false}
             contentContainerClassName="gap-3 items-center"
           >
-            <Pressable
-              className="bg-transparent-day dark:bg-transparent-night size-14 items-center justify-center rounded-full active:opacity-80"
-              onPress={() => {
-                // TODO: add family member
-              }}
-            >
-              <PlusIcon width={24} height={24} stroke="#A0A0A0" />
-            </Pressable>
+            {isOwner ? (
+              <Pressable
+                className="bg-transparent-day dark:bg-transparent-night size-14 items-center justify-center rounded-full active:opacity-80"
+                onPress={() => setInviteDialogOpen(true)}
+              >
+                <PlusIcon width={24} height={24} stroke="#A0A0A0" />
+              </Pressable>
+            ) : null}
             {members.map((member) => (
               <Avatar
                 key={member.id}
@@ -138,6 +146,10 @@ const FamilySettings = () => {
           </ScrollView>
         </View>
       </ScrollView>
+      <InviteFamilyMemberDialog
+        open={inviteDialogOpen}
+        onOpenChange={setInviteDialogOpen}
+      />
     </WithArrowBack>
   );
 };

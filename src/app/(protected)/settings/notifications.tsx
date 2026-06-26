@@ -1,6 +1,7 @@
 import { CustomSwitch } from "@/components/custom-switch";
 import WithArrowBack from "@/layout/with-arrow-back";
-import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 
@@ -10,6 +11,16 @@ type NotificationKey =
   | "taskReminder"
   | "familyMemberJoined"
   | "taskOverdue";
+
+type NotificationSettings = Record<NotificationKey, boolean>;
+
+const DEFAULT_SETTINGS: NotificationSettings = {
+  newTaskAssigned: true,
+  taskCompleted: true,
+  taskReminder: true,
+  familyMemberJoined: true,
+  taskOverdue: true,
+};
 
 type NotificationRowProps = {
   title: string;
@@ -40,17 +51,65 @@ const NotificationRow = ({
 };
 
 const Notifications = () => {
-  const [settings, setSettings] = useState({
-    newTaskAssigned: true,
-    taskCompleted: true,
-    taskReminder: true,
-    familyMemberJoined: true,
-    taskOverdue: true,
-  });
+  const [settings, setSettings] =
+    useState<NotificationSettings>(DEFAULT_SETTINGS);
   const { t } = useTranslation();
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("notification_preferences")
+        .select("preferences")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (cancelled) return;
+      if (error) {
+        console.error("[NOTIF PREFS] load error:", error);
+        return;
+      }
+      if (data?.preferences) {
+        setSettings((prev) => ({
+          ...prev,
+          ...(data.preferences as Partial<NotificationSettings>),
+        }));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const persist = async (next: NotificationSettings) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from("notification_preferences")
+      .upsert(
+        { user_id: user.id, preferences: next },
+        { onConflict: "user_id" }
+      );
+
+    if (error) {
+      console.error("[NOTIF PREFS] save error:", error);
+    }
+  };
+
   const toggle = (key: NotificationKey) => {
-    setSettings((prev) => ({ ...prev, [key]: !prev[key] }));
+    setSettings((prev) => {
+      const next = { ...prev, [key]: !prev[key] };
+      persist(next);
+      return next;
+    });
   };
 
   return (
