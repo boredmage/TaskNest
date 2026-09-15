@@ -1,21 +1,115 @@
+# TaskNest stack: Postgres + the Bun/Hono API + a nightly backup sidecar.
+#
+#   docker compose up -d db           # just Postgres (local dev: bun run dev)
+#   ./deploy.sh                       # the full stack on the VPS
+#
+# Values like ${POSTGRES_PASSWORD} come from the .env file in this directory
+# (Compose loads it automatically). Defaults are dev-only — set real values
+# in .env before deploying. See DEPLOYMENT.md.
+
+# Explicit project name so this stack never collides with the other "server"
+# directories on the same VPS (cowrie, p2p-manager).
+name: tasknest
+
 services:
-  postgres:
+  db:
     image: postgres:16-alpine
     container_name: tasknest-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: tasknest
-      POSTGRES_PASSWORD: tasknest
-      POSTGRES_DB: tasknest
+      POSTGRES_USER: ${POSTGRES_USER:-tasknest}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tasknest}
+      POSTGRES_DB: ${POSTGRES_DB:-tasknest}
+    # Bound to localhost only: reachable for local psql / drizzle-kit on the
+    # host, never on the public interface. The API talks to it over the
+    # internal network as "db:5432" regardless.
+    # Default 5434 matches local dev; on the VPS set POSTGRES_HOST_PORT=5435
+    # in .env because cowrie already uses 5434 and p2p-manager 5433.
     ports:
-      - "127.0.0.1:5434:5432"
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5434}:5432"
     volumes:
       - tasknest_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U tasknest -d tasknest"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tasknest} -d ${POSTGRES_DB:-tasknest}"]
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - internal # private to the API; never joins the public `web` network
+
+  api:
+    build: .
+    image: tasknest-api
+    container_name: tasknest-api
+    restart: unless-stopped
+    # JWT_SECRET, PUBLIC_URL, R2_*, RESEND_API_KEY, … come from .env.
+    env_file: .env
+    environment:
+      # Override whatever DATABASE_URL is in .env: inside the compose network
+      # Postgres is the "db" host on its native 5432. Pending Drizzle
+      # migrations run at startup.
+      DATABASE_URL: postgres://${POSTGRES_USER:-tasknest}:${POSTGRES_PASSWORD:-tasknest}@db:5432/${POSTGRES_DB:-tasknest}
+      NODE_ENV: production
+      PORT: "8787"
+      UPLOADS_DIR: /app/uploads
+    # Bound to localhost only — Caddy reaches the API over the `web` network as
+    # "tasknest-api:8787"; this host publish is just for local curl and the
+    # deploy-script health check.
+    ports:
+      - "127.0.0.1:${API_PORT:-8787}:8787"
+    volumes:
+      # Local-disk avatars, only used when the R2_* variables are unset.
+      - tasknest_uploads:/app/uploads
+    networks:
+      - internal # reach the db (db:5432)
+      - web # let the external Caddy reverse_proxy to tasknest-api:8787
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Nightly logical backups. Dumps land in ./backups on the HOST (they survive
+  # `docker compose down -v`), newest 14 kept. See DEPLOYMENT.md for restore.
+  db-backup:
+    image: postgres:16-alpine
+    container_name: tasknest-db-backup
+    restart: unless-stopped
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD:-tasknest}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        while true; do
+          ts=$$(date +%Y%m%d-%H%M%S)
+          if pg_dump -h db -U "${POSTGRES_USER:-tasknest}" -d "${POSTGRES_DB:-tasknest}" -Fc -f "/backups/tasknest-$$ts.dump"; then
+            echo "backup ok: tasknest-$$ts.dump"
+          else
+            echo "backup FAILED at $$ts" >&2
+          fi
+          ls -1t /backups/tasknest-*.dump 2>/dev/null | tail -n +15 | xargs -r rm -f
+          sleep 86400
+        done
+    volumes:
+      - ./backups:/backups
+    networks:
+      - internal
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   tasknest_pgdata:
+    # Fixed name so the database's location on disk never depends on how the
+    # project is named or where the checkout lives. Overridable for a local
+    # checkout that predates this file (its volume is server_tasknest_pgdata).
+    name: ${PGDATA_VOLUME:-tasknest_pgdata}
+  tasknest_uploads:
+    name: tasknest_uploads
+
+networks:
+  # Private network for API ↔ Postgres traffic only.
+  internal:
+    driver: bridge
+  # The pre-existing shared network the Caddy container also joins.
+  # It must already exist:  docker network create web
+  web:
+    external: true

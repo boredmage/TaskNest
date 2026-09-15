@@ -1,0 +1,17 @@
+# Keep the build context to package.json, bun.lock, tsconfig, src/ and
+# drizzle/ — everything else is secret (.env), host state (uploads/,
+# backups/), or noise.
+node_modules/
+uploads/
+backups/
+.env
+.env.example
+*.tsbuildinfo
+Dockerfile
+docker-compose.yml
+deploy.sh
+DEPLOYMENT.md
+README.md
+.gitignore
+.dockerignore
+.DS_Store

@@ -1,0 +1,75 @@
+name: Deploy server to VPS
+
+# Redeploy the Bun/Hono API whenever server code lands on main.
+# Mirrors cowrie's and p2p-manager's deploy.yml — the three share a VPS.
+#
+# mobile/ (and repo-root tooling) is intentionally ignored via the `paths`
+# filter below: a push that only touches the app won't trigger a redeploy.
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   VPS_HOST     – host/IP of the VPS
+#   VPS_USER     – SSH user (e.g. root)
+#   VPS_SSH_KEY  – the PRIVATE SSH key whose public half is in the VPS's
+#                  authorized_keys (paste the full PEM, incl. header/footer)
+#
+# The repo checkout lives at /root/TaskNest on the VPS (see the deploy step
+# below) — change that path there if you relocate the clone.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "server/**"
+      - ".github/workflows/deploy.yml"
+
+# Let an in-flight deploy finish before the next one starts (don't cancel a
+# half-applied deploy); newer pushes queue behind it.
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: false
+
+jobs:
+  build-check:
+    name: Typecheck and build image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3"
+
+      - name: Install dependencies
+        working-directory: server
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        working-directory: server
+        run: bun run typecheck
+
+      # Validate the production artifact builds before we touch the VPS. No
+      # app secrets are needed at build time (they're injected at runtime via
+      # the compose env_file). If this fails, we never open an SSH session.
+      - name: Build the API Docker image
+        run: docker build -t tasknest-api ./server
+
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    needs: build-check
+    steps:
+      - name: SSH into the VPS and redeploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            cd /root/TaskNest/server
+            # deploy.sh --pull: git pull --ff-only → docker compose build →
+            # up -d → polls http://127.0.0.1:8787/health until healthy, and
+            # keeps the prior image tagged :previous for ./deploy.sh rollback.
+            # A non-zero exit (e.g. failed health check) fails this job.
+            ./deploy.sh --pull
