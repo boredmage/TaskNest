@@ -130,6 +130,28 @@ if [ -z "$PGPW" ] || [ "$PGPW" = "tasknest" ]; then
   fi
 fi
 
+# Postgres is published on localhost for psql/backups; the API reaches it over
+# the internal network regardless. On a shared VPS the default port may be
+# taken by another stack (cowrie has 5434, p2p-manager 5433), so pick the
+# first free port from the configured one upwards. Our own running container
+# doesn't count as a conflict — compose recreates it on the same port.
+port_taken() {
+  docker ps --format '{{.Names}} {{.Ports}}' | grep -v '^tasknest-postgres ' | grep -q ":$1->" && return 0
+  if command -v ss >/dev/null 2>&1; then
+    ss -ltnH 2>/dev/null | awk '{print $4}' | grep -qE "[:.]$1\$" \
+      && ! docker ps --format '{{.Names}} {{.Ports}}' | grep '^tasknest-postgres ' | grep -q ":$1->" \
+      && return 0
+  fi
+  return 1
+}
+PGPORT="$(env_val POSTGRES_HOST_PORT || true)"; PGPORT="${PGPORT:-5434}"
+if port_taken "$PGPORT"; then
+  ORIG="$PGPORT"
+  while port_taken "$PGPORT"; do PGPORT=$((PGPORT + 1)); done
+  warn "Host port $ORIG is in use by another service — publishing Postgres on 127.0.0.1:$PGPORT instead."
+  set_env POSTGRES_HOST_PORT "$PGPORT"
+fi
+
 # Avatar and reset links are built from PUBLIC_URL; it must be the https
 # address Caddy serves. This is the one value that needs a human.
 PUBLIC="$(env_val PUBLIC_URL || true)"
