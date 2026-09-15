@@ -26,7 +26,8 @@ if (!isProd) app.use(logger((line) => console.log(line.replace(/token=[^\s&]+/, 
 app.get("/", (c) => c.json({ name: "tasknest-server", ok: true }));
 app.get("/health", (c) => c.json({ ok: true, time: new Date().toISOString() }));
 
-// Uploaded avatars. `avatar_url` in profiles is relative to this mount.
+// Local-disk avatars (dev fallback when R2 isn't configured); relative
+// `avatar_url` values in profiles resolve against this mount.
 app.use(
   "/uploads/*",
   serveStatic({

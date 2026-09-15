@@ -1,8 +1,8 @@
 import { eq, inArray } from "drizzle-orm";
-import { extname, join } from "node:path";
+import { extname } from "node:path";
 import { db, profiles, type DbOrTx } from "../db/index.ts";
-import { env } from "../env.ts";
 import { badRequest, notFound } from "../lib/errors.ts";
+import { storage } from "../lib/storage.ts";
 
 export async function getProfile(userId: string) {
   const [row] = await db.select().from(profiles).where(eq(profiles.id, userId));
@@ -60,9 +60,12 @@ function toCalendarDate(value: string | null | undefined) {
 }
 
 // ---------------------------------------------------------------------------
-// Avatars live on disk at UPLOADS_DIR/avatars/<userId>.<ext> and are served
-// from /uploads. profiles.avatar_url stores the relative path, the same
-// convention the client used with Supabase storage.
+// Avatars are stored at avatars/<userId>.<ext> via lib/storage (R2 when
+// configured, otherwise UPLOADS_DIR served from /uploads).
+//
+// profiles.avatar_url holds a full public URL when the file is in R2, with a
+// version query so clients don't show a cached image after a re-upload; on
+// local disk it holds the relative path (the client resolves both).
 // ---------------------------------------------------------------------------
 const EXT_BY_MIME: Record<string, string> = {
   "image/jpeg": ".jpg",
@@ -83,17 +86,20 @@ export async function saveAvatar(userId: string, file: File) {
   }
 
   const path = `avatars/${userId}${ext}`;
-  await Bun.write(join(env.UPLOADS_DIR, path), file);
+  await storage.put(path, file);
   await removeStaleAvatars(userId, ext);
-  await db.update(profiles).set({ avatar_url: path }).where(eq(profiles.id, userId));
 
-  return { path, url: `${env.PUBLIC_URL}/uploads/${path}` };
+  const url = storage.remote ? `${storage.publicUrl(path)}?v=${Date.now()}` : storage.publicUrl(path);
+  const stored = storage.remote ? url : path;
+  await db.update(profiles).set({ avatar_url: stored }).where(eq(profiles.id, userId));
+
+  return { path: stored, url };
 }
 
 async function removeStaleAvatars(userId: string, keepExt: string) {
-  for (const ext of new Set(Object.values(EXT_BY_MIME))) {
-    if (ext === keepExt) continue;
-    const stale = Bun.file(join(env.UPLOADS_DIR, `avatars/${userId}${ext}`));
-    if (await stale.exists()) await stale.delete();
-  }
+  await Promise.all(
+    [...new Set(Object.values(EXT_BY_MIME))]
+      .filter((ext) => ext !== keepExt)
+      .map((ext) => storage.remove(`avatars/${userId}${ext}`))
+  );
 }
