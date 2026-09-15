@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Circles">
+<circle id="Ellipse 28" cx="4" cy="24" r="4" fill="white" fill-opacity="0.5"/>
+<circle id="Ellipse 29" cx="44" cy="24" r="4" fill="white" fill-opacity="0.5"/>
+<circle id="Ellipse 28_2" cx="24" cy="4" r="4" fill="white" fill-opacity="0.5"/>
+<circle id="Ellipse 29_2" cx="24" cy="44" r="4" fill="white" fill-opacity="0.5"/>
+<circle id="Ellipse 28_3" cx="38.1421" cy="9.85784" r="4" transform="rotate(45 38.1421 9.85784)" fill="white" fill-opacity="0.5"/>
+<circle id="Ellipse 29_3" cx="9.85779" cy="38.1421" r="4" transform="rotate(45 9.85779 38.1421)" fill="white"/>
+<circle id="Ellipse 28_4" cx="38.1421" cy="38.1421" r="4" transform="rotate(135 38.1421 38.1421)" fill="white" fill-opacity="0.5"/>
+<circle id="Ellipse 29_4" cx="9.85779" cy="9.85785" r="4" transform="rotate(135 9.85779 9.85785)" fill="white" fill-opacity="0.5"/>
+</g>
+</svg>

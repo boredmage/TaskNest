@@ -1,0 +1,1 @@
+ALTER TABLE "family_invites" ADD COLUMN "role" "family_member_role" DEFAULT 'member' NOT NULL;

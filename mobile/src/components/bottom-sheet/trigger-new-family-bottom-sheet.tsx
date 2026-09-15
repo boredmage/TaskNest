@@ -1,0 +1,191 @@
+import { BottomSheetBlurOverlay } from "@/components/bottom-sheet/bottom-sheet-blur-overlay";
+import { CustomButton } from "@/components/custom-button";
+import { JoinFamilyDialog } from "@/components/dialog/join-family-dialog";
+import File from "@/components/icons/bottom-sheet/file";
+import Heart from "@/components/icons/bottom-sheet/heart";
+import Link from "@/components/icons/bottom-sheet/link";
+import Message from "@/components/icons/bottom-sheet/message";
+import Pin from "@/components/icons/bottom-sheet/pin";
+import Users from "@/components/icons/bottom-sheet/users";
+import { useAppTheme } from "@/contexts/app-theme-context";
+import { api, errorMessage } from "@/lib/api";
+import { SHEET_GAP, useSheetCorners } from "@/lib/sheet-corners";
+import { useFamilyStore } from "@/stores/family-store";
+import { Avatar, BottomSheet, cn, RadioGroup, Spinner } from "heroui-native";
+import { useState } from "react";
+import { Alert, View } from "react-native";
+
+export type FamilyOption = "create" | "join" | null;
+
+const iconsMap = [
+  { id: 1, icon: <File color="white" />, bg: "#10D470" },
+  { id: 2, icon: <Pin color="white" />, bg: "#FFA446" },
+  { id: 3, icon: <Heart color="white" />, bg: "#3A8AFF" },
+  { id: 4, icon: <Link color="white" />, bg: "#767676" },
+  { id: 5, icon: <Message color="white" />, bg: "#7559EA" },
+];
+
+type TriggerNewFamilyBottomSheetProps = {
+  onFamilyCreated?: (inviteCode: string | null) => void;
+};
+
+export function TriggerNewFamilyBottomSheet({
+  onFamilyCreated,
+}: TriggerNewFamilyBottomSheetProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<FamilyOption>(null);
+  const [joinDialogOpen, setJoinDialogOpen] = useState(false);
+  const sheetCorners = useSheetCorners();
+  const { isDark } = useAppTheme();
+  const [loading, setLoading] = useState(false);
+  const { fetchFamily: refetchFamily } = useFamilyStore();
+
+  const familyOptions: Array<{
+    value: "create" | "join";
+    label: string;
+    description: string;
+    icon: React.ReactNode;
+  }> = [
+    {
+      value: "create",
+      label: "Create a Family",
+      description: "Invite others to join and manage tasks together.",
+      icon: <Users color={isDark ? "#FFFFFF" : "#1B1B1B"} />,
+    },
+    {
+      value: "join",
+      label: "Join with a Code",
+      description: "Enter your family code to join an existing group.",
+      icon: (
+        <Link color={isDark ? "#FFFFFF" : "#1B1B1B"} width={32} height={32} />
+      ),
+    },
+  ];
+
+  const handleNext = async () => {
+    if (selectedOption == null) return;
+    if (selectedOption === "join") {
+      setJoinDialogOpen(true);
+    } else {
+      setLoading(true);
+      try {
+        const family = await api.post<{ id: string; invite_code: string }>(
+          "/families"
+        );
+
+        if (onFamilyCreated) {
+          onFamilyCreated(family.invite_code ?? null);
+        }
+        refetchFamily();
+      } catch (error) {
+        console.error(error);
+        Alert.alert("Could not create family", errorMessage(error));
+      } finally {
+        setLoading(false);
+      }
+    }
+    setIsOpen(false);
+  };
+
+  return (
+    <BottomSheet
+      isOpen={isOpen}
+      onOpenChange={(value) => {
+        setIsOpen(value);
+        if (!value) setSelectedOption(null);
+      }}
+    >
+      <BottomSheet.Trigger asChild>
+        <CustomButton className="h-11 px-6">Start</CustomButton>
+      </BottomSheet.Trigger>
+      <BottomSheet.Portal>
+        <BottomSheetBlurOverlay />
+        <BottomSheet.Content
+          detached={true}
+          enableOverDrag={false}
+          bottomInset={SHEET_GAP}
+          style={{ marginHorizontal: SHEET_GAP }}
+          backgroundStyle={sheetCorners}
+          backgroundClassName="bg-background-day dark:bg-background-night"
+          contentContainerClassName="pb-10"
+        >
+          <View className="mb-5 items-center">
+            <View className="flex-row gap-4">
+              {iconsMap.map((user, index) => (
+                <Avatar
+                  key={user.id}
+                  className={cn(
+                    "border-background-day dark:border-background-night border-3",
+                    index !== 0 && "-ml-7"
+                  )}
+                  alt={user.id.toString()}
+                  style={{ zIndex: iconsMap.length - index }}
+                >
+                  <Avatar.Fallback
+                    className="size-20"
+                    style={{ backgroundColor: user.bg }}
+                  >
+                    {user.icon}
+                  </Avatar.Fallback>
+                </Avatar>
+              ))}
+            </View>
+          </View>
+          <View className="mb-6 items-center">
+            <BottomSheet.Title className="text-text-day dark:text-text-night text-center text-xl font-bold">
+              🔍 No family group found.
+            </BottomSheet.Title>
+            <BottomSheet.Description className="text-hint text-center text-base">
+              Create a new one or join with a code.
+            </BottomSheet.Description>
+          </View>
+
+          <RadioGroup
+            value={selectedOption ?? undefined}
+            onValueChange={(v) =>
+              setSelectedOption((v ?? null) as FamilyOption)
+            }
+            className="mb-6 gap-3"
+          >
+            {familyOptions.map((opt) => (
+              <RadioGroup.Item key={opt.value} value={opt.value}>
+                {({ isSelected }) => (
+                  <View
+                    className={cn(
+                      "bg-transparent-day flex-row items-center gap-3 rounded-2xl border-2 px-4 py-3",
+                      isSelected ? "border-main" : "border-transparent"
+                    )}
+                  >
+                    <View className="size-10 items-center justify-center">
+                      {opt.icon}
+                    </View>
+                    <View className="flex-1">
+                      <RadioGroup.Label className="text-text-day dark:text-text-night text-base font-semibold">
+                        {opt.label}
+                      </RadioGroup.Label>
+                      <RadioGroup.Description className="text-hint text-sm">
+                        {opt.description}
+                      </RadioGroup.Description>
+                    </View>
+                  </View>
+                )}
+              </RadioGroup.Item>
+            ))}
+          </RadioGroup>
+
+          <CustomButton
+            className="rounded-2xl px-6"
+            isDisabled={selectedOption == null || loading}
+            onPress={handleNext}
+          >
+            {loading ? <Spinner color="#72D000" size="md" /> : "Next"}
+          </CustomButton>
+        </BottomSheet.Content>
+      </BottomSheet.Portal>
+      <JoinFamilyDialog
+        open={joinDialogOpen}
+        onOpenChange={setJoinDialogOpen}
+      />
+    </BottomSheet>
+  );
+}

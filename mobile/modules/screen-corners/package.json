@@ -1,0 +1,7 @@
+{
+  "name": "screen-corners",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "description": "Local Expo module: device screen corner radius"
+}

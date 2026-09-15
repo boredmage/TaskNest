@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tasknest-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tasknest
+      POSTGRES_PASSWORD: tasknest
+      POSTGRES_DB: tasknest
+    ports:
+      - "127.0.0.1:5434:5432"
+    volumes:
+      - tasknest_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tasknest -d tasknest"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  tasknest_pgdata:
