@@ -3,12 +3,14 @@ import { Splash } from "@/components/splash";
 import { AppThemeProvider } from "@/contexts/app-theme-context";
 import "@/i18n";
 import i18n from "@/i18n";
-import { api, refreshIfNeeded } from "@/lib/api";
+import { refreshIfNeeded } from "@/lib/api";
+import { initAvatarCache } from "@/lib/avatar-cache";
+import { flushOutbox, loadOutbox, unloadOutbox } from "@/lib/outbox";
+import { usePushNotifications } from "@/lib/push-notifications";
 import { startRealtime, stopRealtime } from "@/lib/realtime";
+import { whenHydrated } from "@/lib/storage";
 import { useAuthStore } from "@/stores/auth-store";
 import { useNotificationsStore } from "@/stores/notifications-store";
-import { PN_REGISTERED_STORAGE_KEY } from "@/utils/constants";
-import { registerForPushNotificationsAsync } from "@/utils/registerForPushNotificationsAsync";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
@@ -48,14 +50,6 @@ AppState.addEventListener("change", (state) => {
   }
 });
 
-async function savePushTokenForUser(token: string) {
-  try {
-    await api.put("/push-tokens", { token, platform: "expo" });
-  } catch (error) {
-    console.error("Failed to save push token", error);
-  }
-}
-
 const AppContent = () => {
   const { session, user, initialized, celebrating, restore } = useAuthStore();
   // Keep the branded splash up for at least a beat so it never flashes.
@@ -87,6 +81,10 @@ const AppContent = () => {
   const { fetchNotifications, clear: clearNotifications } =
     useNotificationsStore();
 
+  // Register this device for pushes while signed in, open the right screen
+  // when a push is tapped, and keep the app badge in sync.
+  usePushNotifications(userId, signedIn);
+
   const contentWrapper = useCallback(
     (children: React.ReactNode) => (
       <KeyboardAvoidingView
@@ -114,30 +112,27 @@ const AppContent = () => {
     if (!initialized) return;
 
     if (userId) {
-      fetchProfile();
-      fetchFamily();
-      fetchTodos();
-      fetchNotifications();
-      startRealtime();
-
       (async () => {
-        try {
-          const alreadyRegistered = await AsyncStorage.getItem(
-            PN_REGISTERED_STORAGE_KEY
-          );
-          if (!alreadyRegistered) {
-            const token = await registerForPushNotificationsAsync();
-            if (token) {
-              await savePushTokenForUser(token);
-              await AsyncStorage.setItem(PN_REGISTERED_STORAGE_KEY, "true");
-            }
-          }
-        } catch (e) {
-          console.warn("Push notification registration failed", e);
-        }
+        // Persisted state first, so a fresh fetch never gets overwritten by
+        // stale data hydrating late, and the offline queue is ready to replay.
+        await Promise.all([
+          whenHydrated(useProfileStore),
+          whenHydrated(useFamilyStore),
+          whenHydrated(useTodosStore),
+          whenHydrated(useNotificationsStore),
+          initAvatarCache(),
+          loadOutbox(userId),
+        ]);
+        await flushOutbox();
+        fetchProfile();
+        fetchFamily();
+        fetchTodos();
+        fetchNotifications();
+        startRealtime();
       })();
     } else {
       stopRealtime();
+      unloadOutbox();
       clearProfile();
       clearFamily();
       clearTodos();

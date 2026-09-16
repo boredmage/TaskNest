@@ -15,6 +15,7 @@ export const notificationType = pgEnum("notification_type", [
   "todo_assigned",
   "todo_completed",
   "todo_overdue",
+  "todo_reminder",
   "family_archived",
 ]);
 

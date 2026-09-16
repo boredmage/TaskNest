@@ -1,4 +1,5 @@
 import { alert } from "@/assets/icons";
+import { CachedAvatarImage } from "@/components/cached-avatar-image";
 import ChevronRight from "@/components/icons/chevron-right";
 import { SvgIcon } from "@/components/svg-icon";
 import { StatusEnum } from "@/type";
@@ -129,7 +130,7 @@ export function PremiumActivityCard({
                     index === 0 ? "ml-0" : "-ml-2.5"
                   )}
                 >
-                  <Avatar.Image source={{ uri }} />
+                  <CachedAvatarImage uri={uri} />
                   <Avatar.Fallback className="size-7 rounded-full bg-[#E5E5EA] dark:bg-[#3A3A3C]" />
                 </Avatar>
               ))}

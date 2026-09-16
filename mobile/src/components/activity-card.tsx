@@ -1,3 +1,4 @@
+import { CachedAvatarImage } from "@/components/cached-avatar-image";
 import Check from "@/components/icons/check";
 import { useAppTheme } from "@/contexts/app-theme-context";
 import { StatusEnum } from "@/type";
@@ -218,7 +219,7 @@ export function ActivityCard({
                   index === 0 ? "ml-0" : "-ml-2"
                 )}
               >
-                <Avatar.Image source={{ uri }} />
+                <CachedAvatarImage uri={uri} />
                 <Avatar.Fallback className="size-6 rounded-full bg-[#E5E5EA] dark:bg-[#3A3A3C]" />
               </Avatar>
             ))}

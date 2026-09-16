@@ -7,6 +7,7 @@ import {
   tabFile,
   trash,
 } from "@/assets/icons";
+import { CachedAvatarImage } from "@/components/cached-avatar-image";
 import { CustomButton } from "@/components/custom-button";
 import { EmptyState } from "@/components/empty-state";
 import BellIcon from "@/components/icons/bell";
@@ -334,7 +335,7 @@ const TaskDetail = () => {
               >
                 <Avatar alt={person.name} className="size-8 rounded-full">
                   {person.avatar ? (
-                    <Avatar.Image source={{ uri: person.avatar }} />
+                    <CachedAvatarImage uri={person.avatar} />
                   ) : null}
                   <Avatar.Fallback className="size-8 items-center justify-center rounded-full bg-[#E5E5EA] dark:bg-[#3A3A3C]">
                     <User width={16} height={16} color="#A0A0A0" />

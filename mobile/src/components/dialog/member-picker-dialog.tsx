@@ -1,3 +1,4 @@
+import { CachedAvatarImage } from "@/components/cached-avatar-image";
 import { CustomButton } from "@/components/custom-button";
 import Check from "@/components/icons/check";
 import User from "@/components/icons/user";
@@ -55,10 +56,8 @@ export function MemberPickerDialog({
                     className="bg-transparent-day dark:bg-transparent-night size-10"
                   >
                     {member.avatar_url ? (
-                      <Avatar.Image
-                        source={{
-                          uri: getAvatarUrl(member.avatar_url) ?? undefined,
-                        }}
+                      <CachedAvatarImage
+                        uri={getAvatarUrl(member.avatar_url) ?? undefined}
                       />
                     ) : null}
                     <Avatar.Fallback color="accent">

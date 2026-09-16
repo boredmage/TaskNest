@@ -21,6 +21,8 @@ export const todos = pgTable(
     repeat: todoRepeat("repeat").notNull().default("none"),
     /** Minutes before due_date to remind; null = no reminder. */
     reminder_minutes: integer("reminder_minutes"),
+    /** When the "due soon" reminder was pushed; null until sent (reset when the due date or reminder changes). */
+    reminder_sent_at: timestampTz("reminder_sent_at"),
     created_at: createdAt(),
     updated_at: updatedAt(),
   },

@@ -1,3 +1,4 @@
+import { CachedAvatarImage } from "@/components/cached-avatar-image";
 import { useRouter } from "expo-router";
 import { Button, cn } from "heroui-native";
 import { useTranslation } from "react-i18next";
@@ -11,7 +12,7 @@ import { api } from "@/lib/api";
 import { getAvatarUrl } from "@/lib/util";
 import { useAuthStore } from "@/stores/auth-store";
 import { useProfileStore } from "@/stores/profile-store";
-import { PN_REGISTERED_STORAGE_KEY } from "@/utils/constants";
+import { PN_TOKEN_STORAGE_KEY } from "@/utils/constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Avatar } from "heroui-native";
 import { CustomSwitch } from "../../../components/custom-switch";
@@ -63,10 +64,14 @@ const Settings = () => {
   };
 
   const handleSignOut = async () => {
-    await AsyncStorage.removeItem(PN_REGISTERED_STORAGE_KEY);
+    // Stop pushes to this device (not the account's other devices) before
+    // the session is revoked.
     try {
-      // Stop pushes to this account's devices before the token is revoked.
-      await api.delete("/push-tokens");
+      const token = await AsyncStorage.getItem(PN_TOKEN_STORAGE_KEY);
+      if (token) {
+        await api.delete("/push-tokens", { token });
+        await AsyncStorage.removeItem(PN_TOKEN_STORAGE_KEY);
+      }
     } catch (error) {
       console.error("Failed to delete push token", error);
     }
@@ -107,10 +112,8 @@ const Settings = () => {
                 alt="User"
                 className="bg-transparent-day dark:bg-transparent-night size-14"
               >
-                <Avatar.Image
-                  source={{
-                    uri: getAvatarUrl(profile?.avatar_url ?? null) || undefined,
-                  }}
+                <CachedAvatarImage
+                  uri={getAvatarUrl(profile?.avatar_url ?? null) || undefined}
                 />
                 <Avatar.Fallback color="accent">
                   <User width={24} height={24} color="#A0A0A0" />

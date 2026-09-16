@@ -5,10 +5,12 @@ import { app } from "./app.ts";
 import { runMigrations } from "./db/migrate.ts";
 import { env } from "./env.ts";
 import { startOverdueSweeper } from "./jobs/overdue.ts";
+import { startReminderSweeper } from "./jobs/reminders.ts";
 
 await mkdir(join(env.UPLOADS_DIR, "avatars"), { recursive: true });
 await runMigrations();
 const stopSweeper = startOverdueSweeper();
+const stopReminders = startReminderSweeper();
 
 const server = Bun.serve({
   port: env.PORT,
@@ -21,6 +23,7 @@ console.log(`TaskNest server listening on http://localhost:${server.port} (publi
 
 const shutdown = () => {
   stopSweeper();
+  stopReminders();
   server.stop();
   process.exit(0);
 };

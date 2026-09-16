@@ -1,3 +1,4 @@
+import { CachedAvatarImage } from "@/components/cached-avatar-image";
 import ChevronRight from "@/components/icons/chevron-right";
 import User from "@/components/icons/user";
 import { api, errorMessage } from "@/lib/api";
@@ -115,6 +116,17 @@ const Notification = ({ notification }: { notification: AppNotification }) => {
       head = <Strong>Task overdue</Strong>;
       detail = box(taskLabel);
       break;
+    case NotificationType.TODO_REMINDER:
+      head = (
+        <>
+          <Strong>Due soon</Strong>
+          {notification.body?.match(/is due (.+)\.$/)?.[1]
+            ? ` · ${notification.body.match(/is due (.+)\.$/)![1]}`
+            : ""}
+        </>
+      );
+      detail = box(taskLabel);
+      break;
     case NotificationType.JOIN_REQUEST_RECEIVED:
       head = (
         <>
@@ -162,9 +174,7 @@ const Notification = ({ notification }: { notification: AppNotification }) => {
         className="bg-transparent-day dark:bg-transparent-night size-10 rounded-full"
       >
         {avatarUrl ? (
-          <Avatar.Image
-            source={{ uri: getAvatarUrl(avatarUrl) ?? undefined }}
-          />
+          <CachedAvatarImage uri={getAvatarUrl(avatarUrl) ?? undefined} />
         ) : null}
         <Avatar.Fallback className="bg-transparent-day dark:bg-transparent-night size-10 items-center justify-center rounded-full">
           <User width={18} height={18} color="#A0A0A0" />

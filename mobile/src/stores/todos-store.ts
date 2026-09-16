@@ -1,8 +1,17 @@
-import { api, getUser } from "@/lib/api";
+import { api, getUser, isNetworkError } from "@/lib/api";
+import {
+  commit,
+  pendingCreatedTodos,
+  pendingTodoIds,
+  registerHandler,
+} from "@/lib/outbox";
+import { jsonStorage } from "@/lib/storage";
 import { getAvatarUrl } from "@/lib/util";
 import { FamilyMember, useFamilyStore } from "@/stores/family-store";
 import { StatusEnum } from "@/type";
+import { uuid } from "expo-modules-core";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 /** Matches todos.status in the DB. */
 export type TodoStatus = "in_progress" | "completed" | "overdue" | "archived";
@@ -42,159 +51,243 @@ export interface CreateTodoInput {
   reminder_minutes?: number | null;
 }
 
+/** `queued` is true when the change was saved locally and will sync later. */
+export type MutationResult = { error: unknown; queued?: boolean };
+
 interface TodosStore {
   todos: Todo[];
   loading: boolean;
   error: string | null;
 
-  fetchTodos: () => Promise<void>;
-  createTodo: (input: CreateTodoInput) => Promise<{ error: unknown }>;
+  /** `silent` refreshes without flipping `loading` (background syncs). */
+  fetchTodos: (opts?: { silent?: boolean }) => Promise<void>;
+  createTodo: (input: CreateTodoInput) => Promise<MutationResult>;
   updateTodo: (
     id: string,
     patch: Partial<CreateTodoInput>
-  ) => Promise<{ error: unknown }>;
-  setStatus: (id: string, status: TodoStatus) => Promise<{ error: unknown }>;
-  toggleComplete: (
-    id: string,
-    completed: boolean
-  ) => Promise<{ error: unknown }>;
-  archiveTodo: (id: string) => Promise<{ error: unknown }>;
-  deleteTodo: (id: string) => Promise<{ error: unknown }>;
+  ) => Promise<MutationResult>;
+  setStatus: (id: string, status: TodoStatus) => Promise<MutationResult>;
+  toggleComplete: (id: string, completed: boolean) => Promise<MutationResult>;
+  archiveTodo: (id: string) => Promise<MutationResult>;
+  deleteTodo: (id: string) => Promise<MutationResult>;
   /** Apply a change pushed over the realtime socket. */
   applyRemote: (action: "created" | "updated" | "deleted", todo: Todo) => void;
   clear: () => void;
 }
 
-export const useTodosStore = create<TodosStore>((set, get) => ({
-  todos: [],
-  loading: false,
-  error: null,
+/**
+ * Local-first: every mutation updates the list immediately, then is
+ * committed through the outbox (sent now, or queued until we're online).
+ * The list itself is persisted so it's there on a cold, offline start.
+ */
+export const useTodosStore = create<TodosStore>()(
+  persist(
+    (set, get) => ({
+      todos: [],
+      loading: false,
+      error: null,
 
-  fetchTodos: async () => {
-    set({ loading: true, error: null });
-    try {
-      if (!getUser()) {
-        set({ todos: [], loading: false, error: "User not authenticated" });
-        return;
-      }
+      fetchTodos: async (opts) => {
+        if (!opts?.silent) set({ loading: true, error: null });
+        try {
+          if (!getUser()) {
+            set({ todos: [], loading: false, error: "User not authenticated" });
+            return;
+          }
+          // The server returns the user's personal todos + their family's
+          // todos, already sorted by due date (nulls last) then newest first.
+          const data = await api.get<Todo[]>("/todos");
+          set({
+            todos: mergeWithPending(data, get().todos),
+            loading: false,
+            error: null,
+          });
+        } catch (err: unknown) {
+          if (!isNetworkError(err)) console.error("[TODOS] fetch error:", err);
+          // Offline: keep what we have, quietly.
+          set({
+            loading: false,
+            error: isNetworkError(err)
+              ? null
+              : err instanceof Error
+                ? err.message
+                : "Failed to fetch todos",
+          });
+        }
+      },
 
-      // The server returns the user's personal todos + their family's todos,
-      // already sorted by due date (nulls last) then newest first.
-      const data = await api.get<Todo[]>("/todos");
-      set({ todos: data, loading: false, error: null });
-    } catch (err: unknown) {
-      console.error("[TODOS] fetch error:", err);
-      const message =
-        err instanceof Error ? err.message : "Failed to fetch todos";
-      set({ loading: false, error: message });
+      createTodo: async (input) => {
+        const user = getUser();
+        if (!user) return { error: "User not authenticated" };
+
+        const familyId = useFamilyStore.getState().familyId;
+        const scope: TodoScope =
+          input.scope ?? (familyId ? "family" : "personal");
+        const now = new Date().toISOString();
+        const todo: Todo = {
+          id: uuid.v4(),
+          scope,
+          family_id: scope === "family" ? familyId : null,
+          owner_id: user.id,
+          title: input.title.trim(),
+          description: input.description?.trim() || null,
+          category: input.category ?? null,
+          assignee_ids: input.assignee_ids?.length ? input.assignee_ids : null,
+          due_date: input.due_date ?? null,
+          status: "in_progress",
+          priority: input.priority ?? "medium",
+          repeat: input.repeat ?? "none",
+          reminder_minutes: input.reminder_minutes ?? null,
+          created_at: now,
+          updated_at: now,
+        };
+
+        set({ todos: upsertTodo(get().todos, todo) });
+        try {
+          const { queued } = await commit({ kind: "todo.create", todo });
+          return { error: null, queued };
+        } catch (err) {
+          console.error("[TODOS] create error:", err);
+          set({ todos: get().todos.filter((t) => t.id !== todo.id) });
+          return { error: err };
+        }
+      },
+
+      updateTodo: async (id, patch) => {
+        const body: Record<string, unknown> = {};
+        if (patch.title !== undefined) body.title = patch.title.trim();
+        if (patch.description !== undefined)
+          body.description = patch.description?.trim() || null;
+        if (patch.category !== undefined)
+          body.category = patch.category ?? null;
+        if (patch.due_date !== undefined)
+          body.due_date = patch.due_date ?? null;
+        if (patch.assignee_ids !== undefined)
+          body.assignee_ids = patch.assignee_ids?.length
+            ? patch.assignee_ids
+            : null;
+        if (patch.priority !== undefined) body.priority = patch.priority;
+        if (patch.repeat !== undefined) body.repeat = patch.repeat;
+        if (patch.reminder_minutes !== undefined)
+          body.reminder_minutes = patch.reminder_minutes ?? null;
+        return applyPatch(id, body);
+      },
+
+      setStatus: (id, status) => applyPatch(id, { status }),
+
+      toggleComplete: (id, completed) =>
+        get().setStatus(id, completed ? "completed" : "in_progress"),
+
+      archiveTodo: (id) => get().setStatus(id, "archived"),
+
+      deleteTodo: async (id) => {
+        const prev = get().todos;
+        set({ todos: prev.filter((t) => t.id !== id) });
+        try {
+          const { queued } = await commit({ kind: "todo.delete", todoId: id });
+          return { error: null, queued };
+        } catch (err) {
+          console.error("[TODOS] delete error:", err);
+          set({ todos: prev });
+          return { error: err };
+        }
+      },
+
+      applyRemote: (action, todo) => {
+        // A queued local change beats whatever the server just pushed.
+        if (pendingTodoIds().has(todo.id)) return;
+        set({
+          todos:
+            action === "deleted"
+              ? get().todos.filter((t) => t.id !== todo.id)
+              : upsertTodo(get().todos, todo),
+        });
+      },
+
+      clear: () => set({ todos: [], error: null }),
+    }),
+    {
+      name: "tasknest.todos",
+      storage: jsonStorage(),
+      partialize: (s) => ({ todos: s.todos }),
     }
-  },
+  )
+);
 
-  createTodo: async (input) => {
-    try {
-      if (!getUser()) return { error: "User not authenticated" };
+/** Optimistically merge `patch` into a todo, then commit it. */
+async function applyPatch(
+  id: string,
+  patch: Record<string, unknown>
+): Promise<MutationResult> {
+  const prev = useTodosStore.getState().todos;
+  if (!prev.some((t) => t.id === id)) return { error: "Todo not found" };
+  useTodosStore.setState({
+    todos: sortTodos(
+      prev.map((t) =>
+        t.id === id
+          ? ({ ...t, ...patch, updated_at: new Date().toISOString() } as Todo)
+          : t
+      )
+    ),
+  });
+  try {
+    const { queued } = await commit({ kind: "todo.update", todoId: id, patch });
+    return { error: null, queued };
+  } catch (err) {
+    console.error("[TODOS] update error:", err);
+    useTodosStore.setState({ todos: prev });
+    return { error: err };
+  }
+}
 
-      const familyId = useFamilyStore.getState().familyId;
-      const scope: TodoScope =
-        input.scope ?? (familyId ? "family" : "personal");
+/** Server truth, except for todos with unsent local changes. */
+function mergeWithPending(server: Todo[], local: Todo[]): Todo[] {
+  const pending = pendingTodoIds();
+  if (pending.size === 0) return server;
+  const localById = new Map(local.map((t) => [t.id, t]));
+  const merged = server.map((t) =>
+    pending.has(t.id) ? (localById.get(t.id) ?? t) : t
+  );
+  const known = new Set(merged.map((t) => t.id));
+  for (const t of pendingCreatedTodos()) {
+    if (!known.has(t.id)) merged.push(localById.get(t.id) ?? t);
+  }
+  return sortTodos(merged);
+}
 
-      const data = await api.post<Todo>("/todos", {
-        scope,
-        family_id: scope === "family" ? familyId : null,
-        title: input.title.trim(),
-        description: input.description?.trim() || null,
-        category: input.category ?? null,
-        due_date: input.due_date ?? null,
-        assignee_ids: input.assignee_ids ?? null,
-        priority: input.priority ?? "medium",
-        repeat: input.repeat ?? "none",
-        reminder_minutes: input.reminder_minutes ?? null,
-      });
+// --- outbox handlers ----------------------------------------------------------
+// How each queued op reaches the server. The response replaces the local
+// copy unless a later queued change for the same todo is still waiting.
+function applyServer(todo: Todo) {
+  if (pendingTodoIds().has(todo.id)) return;
+  useTodosStore.setState((s) => ({ todos: upsertTodo(s.todos, todo) }));
+}
 
-      // The realtime "created" event can land before this response, so
-      // upsert rather than prepend to avoid a duplicate row.
-      set({ todos: upsertTodo(get().todos, data) });
-      return { error: null };
-    } catch (err: unknown) {
-      console.error("[TODOS] create error:", err);
-      return { error: err };
-    }
-  },
+registerHandler("todo.create", async ({ todo }) => {
+  const saved = await api.post<Todo>("/todos", {
+    id: todo.id,
+    scope: todo.scope,
+    family_id: todo.family_id,
+    title: todo.title,
+    description: todo.description,
+    category: todo.category,
+    due_date: todo.due_date,
+    assignee_ids: todo.assignee_ids,
+    priority: todo.priority,
+    repeat: todo.repeat,
+    reminder_minutes: todo.reminder_minutes,
+  });
+  applyServer(saved);
+});
 
-  updateTodo: async (id, patch) => {
-    try {
-      const body: Record<string, unknown> = {};
-      if (patch.title !== undefined) body.title = patch.title.trim();
-      if (patch.description !== undefined)
-        body.description = patch.description?.trim() || null;
-      if (patch.category !== undefined) body.category = patch.category ?? null;
-      if (patch.due_date !== undefined) body.due_date = patch.due_date ?? null;
-      if (patch.assignee_ids !== undefined)
-        body.assignee_ids = patch.assignee_ids ?? null;
-      if (patch.priority !== undefined) body.priority = patch.priority;
-      if (patch.repeat !== undefined) body.repeat = patch.repeat;
-      if (patch.reminder_minutes !== undefined)
-        body.reminder_minutes = patch.reminder_minutes ?? null;
+registerHandler("todo.update", async ({ todoId, patch }) => {
+  const saved = await api.patch<Todo>(`/todos/${todoId}`, patch);
+  applyServer(saved);
+});
 
-      const updated = await api.patch<Todo>(`/todos/${id}`, body);
-      set({ todos: upsertTodo(get().todos, updated) });
-      return { error: null };
-    } catch (error) {
-      console.error("[TODOS] update error:", error);
-      return { error };
-    }
-  },
-
-  setStatus: async (id, status) => {
-    const prev = get().todos;
-    // Optimistic update
-    set({
-      todos: prev.map((t) =>
-        t.id === id ? { ...t, status, updated_at: new Date().toISOString() } : t
-      ),
-    });
-
-    try {
-      const updated = await api.patch<Todo>(`/todos/${id}`, { status });
-      set({ todos: upsertTodo(get().todos, updated) });
-      return { error: null };
-    } catch (error) {
-      console.error("[TODOS] setStatus error:", error);
-      set({ todos: prev }); // rollback
-      return { error };
-    }
-  },
-
-  toggleComplete: async (id, completed) =>
-    get().setStatus(id, completed ? "completed" : "in_progress"),
-
-  archiveTodo: async (id) => get().setStatus(id, "archived"),
-
-  deleteTodo: async (id) => {
-    const prev = get().todos;
-    set({ todos: prev.filter((t) => t.id !== id) });
-
-    try {
-      await api.delete(`/todos/${id}`);
-      return { error: null };
-    } catch (error) {
-      console.error("[TODOS] delete error:", error);
-      set({ todos: prev }); // rollback
-      return { error };
-    }
-  },
-
-  applyRemote: (action, todo) => {
-    set({
-      todos:
-        action === "deleted"
-          ? get().todos.filter((t) => t.id !== todo.id)
-          : upsertTodo(get().todos, todo),
-    });
-  },
-
-  clear: () => set({ todos: [], error: null }),
-}));
+registerHandler("todo.delete", async ({ todoId }) => {
+  await api.delete(`/todos/${todoId}`);
+});
 
 // ---------------------------------------------------------------------------
 // Derivation helpers (kept out of the store so components stay declarative)

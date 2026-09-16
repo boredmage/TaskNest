@@ -20,6 +20,7 @@ const schema = z.object({
   RESEND_API_KEY: z.string().optional().default(""),
   MAIL_FROM: z.string().default("TaskNest <no-reply@example.com>"),
   OVERDUE_SWEEP_INTERVAL_SECONDS: z.coerce.number().int().positive().default(300),
+  REMINDER_SWEEP_INTERVAL_SECONDS: z.coerce.number().int().positive().default(60),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });
 

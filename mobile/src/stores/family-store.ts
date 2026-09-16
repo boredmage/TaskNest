@@ -1,5 +1,9 @@
-import { api, errorMessage, getUser } from "@/lib/api";
+import { api, errorMessage, getUser, isNetworkError } from "@/lib/api";
+import { prefetchAvatars } from "@/lib/avatar-cache";
+import { jsonStorage } from "@/lib/storage";
+import { getAvatarUrl } from "@/lib/util";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 /** Matches family_members.role in DB. */
 export type FamilyMemberRole = "owner" | "admin" | "member";
@@ -46,61 +50,82 @@ interface FamilyStore {
   clearFamily: () => void;
 }
 
-export const useFamilyStore = create<FamilyStore>((set) => ({
-  family: null,
-  familyId: null,
-  inviteCode: null,
-  members: [],
-  loading: false,
-  error: null,
+export const useFamilyStore = create<FamilyStore>()(
+  persist(
+    (set) => ({
+      family: null,
+      familyId: null,
+      inviteCode: null,
+      members: [],
+      loading: false,
+      error: null,
 
-  fetchFamily: async (opts) => {
-    if (!opts?.silent) set({ loading: true, error: null });
-    try {
-      if (!getUser()) {
-        set({ loading: false, error: "User not authenticated" });
-        return;
-      }
+      fetchFamily: async (opts) => {
+        if (!opts?.silent) set({ loading: true, error: null });
+        try {
+          if (!getUser()) {
+            set({ loading: false, error: "User not authenticated" });
+            return;
+          }
 
-      // The server resolves "the family I own or belong to" plus its members
-      // (with names/avatars) in one call.
-      const family = await api.get<Family | null>("/families/me");
+          // The server resolves "the family I own or belong to" plus its members
+          // (with names/avatars) in one call.
+          const family = await api.get<Family | null>("/families/me");
 
-      if (!family) {
+          if (!family) {
+            set({
+              family: null,
+              familyId: null,
+              inviteCode: null,
+              members: [],
+              loading: false,
+              error: null,
+            });
+            return;
+          }
+
+          set({
+            family,
+            familyId: family.id,
+            inviteCode: family.invite_code,
+            members: family.members,
+            loading: false,
+            error: null,
+          });
+          // Everyone's picture, on disk, before it's ever needed.
+          prefetchAvatars(
+            family.members.map((m) => getAvatarUrl(m.avatar_url))
+          );
+        } catch (err: unknown) {
+          // Offline: keep the persisted family, quietly.
+          set({
+            loading: false,
+            error: isNetworkError(err)
+              ? null
+              : errorMessage(err, "Failed to fetch family"),
+          });
+        }
+      },
+
+      clearFamily: () => {
         set({
           family: null,
           familyId: null,
           inviteCode: null,
           members: [],
-          loading: false,
           error: null,
         });
-        return;
-      }
-
-      set({
-        family,
-        familyId: family.id,
-        inviteCode: family.invite_code,
-        members: family.members,
-        loading: false,
-        error: null,
-      });
-    } catch (err: unknown) {
-      set({
-        loading: false,
-        error: errorMessage(err, "Failed to fetch family"),
-      });
+      },
+    }),
+    {
+      name: "tasknest.family",
+      storage: jsonStorage(),
+      partialize: (s) => ({
+        family: s.family,
+        familyId: s.familyId,
+        inviteCode: s.inviteCode,
+        members: s.members,
+      }),
     }
-  },
-
-  clearFamily: () => {
-    set({
-      family: null,
-      familyId: null,
-      inviteCode: null,
-      members: [],
-      error: null,
-    });
-  },
-}));
+  )
+);

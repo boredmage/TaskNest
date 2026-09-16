@@ -22,6 +22,7 @@ const PUSH_TOGGLE: Partial<Record<NotificationType, string>> = {
   todo_assigned: "newTaskAssigned",
   todo_completed: "taskCompleted",
   todo_overdue: "taskOverdue",
+  todo_reminder: "taskReminder",
   join_request_approved: "familyMemberJoined",
   family_invite_accepted: "familyMemberJoined",
 };
@@ -37,11 +38,18 @@ export async function notify(tx: DbOrTx, items: NewNotification[]) {
 
 async function push(rows: Notification[]) {
   const userIds = [...new Set(rows.map((r) => r.user_id))];
-  const [tokens, prefs] = await Promise.all([
+  const [tokens, prefs, unread] = await Promise.all([
     db.select().from(userPushTokens).where(inArray(userPushTokens.user_id, userIds)),
     db.select().from(notificationPreferences).where(inArray(notificationPreferences.user_id, userIds)),
+    // iOS badge = the recipient's unread count (the rows just inserted are included).
+    db
+      .select({ user_id: notifications.user_id, count: sql<number>`count(*)::int` })
+      .from(notifications)
+      .where(and(inArray(notifications.user_id, userIds), isNull(notifications.read_at)))
+      .groupBy(notifications.user_id),
   ]);
   const prefsOf = new Map(prefs.map((p) => [p.user_id, p.preferences]));
+  const badgeOf = new Map(unread.map((u) => [u.user_id, u.count]));
 
   const messages: PushMessage[] = [];
   for (const row of rows) {
@@ -53,11 +61,19 @@ async function push(rows: Notification[]) {
         title: row.title ?? undefined,
         body: row.body ?? undefined,
         sound: "default",
+        badge: badgeOf.get(row.user_id) ?? 1,
+        channelId: "default",
+        priority: "high",
         data: { notification_id: row.id, type: row.type, ...row.data },
       });
     }
   }
-  await sendPush(messages);
+
+  const dead = await sendPush(messages);
+  if (dead.length) {
+    await db.delete(userPushTokens).where(inArray(userPushTokens.token, dead));
+    console.log(`[push] pruned ${dead.length} unregistered token(s)`);
+  }
 }
 
 export function listForUser(userId: string, limit: number) {

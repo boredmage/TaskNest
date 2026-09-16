@@ -1,3 +1,4 @@
+import { reportOffline, reportOnline } from "@/lib/connectivity";
 import * as SecureStore from "expo-secure-store";
 
 /**
@@ -33,6 +34,20 @@ export type AuthUser = {
 };
 
 export type AuthResponse = { user: AuthUser; session: Session };
+
+/** The request never reached the server (offline, DNS, timeout). */
+export class NetworkError extends Error {
+  constructor(message = "You're offline") {
+    super(message);
+    this.name = "NetworkError";
+  }
+}
+
+export const isNetworkError = (err: unknown): err is NetworkError =>
+  err instanceof NetworkError;
+
+/** Give up on a request after this long; a hung socket is as good as offline. */
+const REQUEST_TIMEOUT_MS = 15_000;
 
 export class ApiError extends Error {
   constructor(
@@ -196,7 +211,28 @@ export async function request<T = unknown>(
       payload = JSON.stringify(body);
     }
 
-    const res = await fetch(url.toString(), { method, headers, body: payload });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    let res: Response;
+    try {
+      res = await fetch(url.toString(), {
+        method,
+        headers,
+        body: payload,
+        signal: controller.signal,
+      });
+    } catch (e) {
+      // fetch only rejects for network-level failures.
+      reportOffline();
+      throw new NetworkError(
+        e instanceof Error && e.name === "AbortError"
+          ? "The server took too long to respond"
+          : "You're offline"
+      );
+    } finally {
+      clearTimeout(timeout);
+    }
+    reportOnline();
 
     if (res.status === 204) return undefined as T;
 

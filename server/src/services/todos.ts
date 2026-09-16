@@ -1,4 +1,4 @@
-import { and, desc, eq, exists, lt, or, sql } from "drizzle-orm";
+import { and, desc, eq, exists, isNotNull, isNull, lt, or, sql } from "drizzle-orm";
 import {
   db,
   familyMembers,
@@ -29,6 +29,7 @@ export type TodoInput = {
 };
 
 export type CreateTodoInput = TodoInput & {
+  id?: string;
   title: string;
   scope?: TodoScope;
   family_id?: string | null;
@@ -51,6 +52,15 @@ export function listTodos(userId: string) {
 
 export function createTodo(userId: string, input: CreateTodoInput) {
   return db.transaction(async (tx) => {
+    // Idempotent on the client-supplied id: an offline queue may replay a
+    // create whose first attempt reached us but whose response was lost.
+    if (input.id) {
+      const [existing] = await tx.select().from(todos).where(eq(todos.id, input.id));
+      if (existing) {
+        if (existing.owner_id !== userId) throw forbidden("That todo id belongs to someone else");
+        return existing;
+      }
+    }
     const scope = input.scope ?? (input.family_id ? "family" : "personal");
     const familyId = scope === "family" ? input.family_id : null;
     if (scope === "family") {
@@ -62,6 +72,7 @@ export function createTodo(userId: string, input: CreateTodoInput) {
       .insert(todos)
       .values({
         ...cleanFields(input),
+        ...(input.id && { id: input.id }),
         title: input.title.trim(),
         owner_id: userId,
         scope,
@@ -111,6 +122,51 @@ export async function deleteTodo(userId: string, id: string) {
   if (todo.owner_id !== userId) throw forbidden("Only the owner can delete a todo");
   await db.delete(todos).where(eq(todos.id, id));
   publish(await audience(db, todo), { type: "todo", action: "deleted", todo });
+}
+
+/**
+ * Push "due soon" reminders: in-progress todos whose reminder window
+ * (due_date − reminder_minutes) has opened and that haven't been reminded
+ * yet. Marks them so each todo reminds once per due date.
+ */
+export function sweepReminders() {
+  return db.transaction(async (tx) => {
+    const due = await tx
+      .update(todos)
+      .set({ reminder_sent_at: new Date() })
+      .where(
+        and(
+          eq(todos.status, "in_progress"),
+          isNull(todos.reminder_sent_at),
+          isNotNull(todos.reminder_minutes),
+          isNotNull(todos.due_date),
+          sql`${todos.due_date} - (${todos.reminder_minutes} * interval '1 minute') <= now()`,
+          // Don't fire a reminder for something already past due; the overdue sweep covers that.
+          sql`${todos.due_date} > now()`
+        )
+      )
+      .returning();
+
+    await notify(
+      tx,
+      due.flatMap((t) =>
+        [...new Set([t.owner_id, ...(t.assignee_ids ?? [])])].map((user_id) => ({
+          user_id,
+          type: "todo_reminder" as const,
+          title: "Task due soon",
+          body: `"${t.title}" is due ${dueIn(t.reminder_minutes!)}.`,
+          data: { todo_id: t.id, family_id: t.family_id },
+        }))
+      )
+    );
+    return due.length;
+  });
+}
+
+function dueIn(minutes: number) {
+  if (minutes % 1440 === 0) return minutes === 1440 ? "in 1 day" : `in ${minutes / 1440} days`;
+  if (minutes % 60 === 0) return minutes === 60 ? "in 1 hour" : `in ${minutes / 60} hours`;
+  return `in ${minutes} minutes`;
 }
 
 /** Flip past-due in-progress todos to overdue and notify owner + assignees. */
@@ -169,7 +225,10 @@ function cleanFields(input: TodoInput) {
   if (input.status !== undefined) set.status = input.status;
   if (input.priority !== undefined) set.priority = input.priority;
   if (input.repeat !== undefined) set.repeat = input.repeat;
-  if (input.reminder_minutes !== undefined) set.reminder_minutes = input.reminder_minutes;
+  if (input.reminder_minutes !== undefined) {
+    set.reminder_minutes = input.reminder_minutes;
+    set.reminder_sent_at = null; // re-arm the reminder
+  }
   if (input.assignee_ids !== undefined) {
     const ids = [...new Set(input.assignee_ids ?? [])];
     set.assignee_ids = ids.length ? ids : null;
@@ -178,6 +237,7 @@ function cleanFields(input: TodoInput) {
     const d = input.due_date ? new Date(input.due_date) : null;
     if (d && Number.isNaN(d.getTime())) throw badRequest("invalid_date", "due_date is not a valid date");
     set.due_date = d;
+    set.reminder_sent_at = null; // re-arm the reminder
   }
   return set;
 }

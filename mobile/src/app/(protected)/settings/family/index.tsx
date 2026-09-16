@@ -1,3 +1,4 @@
+import { CachedAvatarImage } from "@/components/cached-avatar-image";
 import { InviteFamilyMemberDialog } from "@/components/dialog/invite-family-member-dialog";
 import ChevronRight from "@/components/icons/chevron-right";
 import PlusIcon from "@/components/icons/plus";
@@ -86,10 +87,8 @@ const FamilySettings = () => {
                 className="bg-transparent-day dark:bg-transparent-night size-14"
               >
                 {member.avatar_url ? (
-                  <Avatar.Image
-                    source={{
-                      uri: getAvatarUrl(member.avatar_url) ?? undefined,
-                    }}
+                  <CachedAvatarImage
+                    uri={getAvatarUrl(member.avatar_url) ?? undefined}
                   />
                 ) : null}
                 <Avatar.Fallback color="accent">

@@ -1,5 +1,6 @@
 import { API_URL, getSession, refreshIfNeeded } from "@/lib/api";
-import { useFamilyStore } from "@/stores/family-store";
+import { reportOnline } from "@/lib/connectivity";
+import { sync } from "@/lib/sync";
 import { useNotificationsStore } from "@/stores/notifications-store";
 import { useTodosStore, type Todo } from "@/stores/todos-store";
 import { AppState, type AppStateStatus } from "react-native";
@@ -52,6 +53,7 @@ async function connect() {
   socket = ws;
 
   ws.onopen = () => {
+    reportOnline();
     attempts = 0;
     pingTimer = setInterval(() => ws.send("ping"), PING_MS);
   };
@@ -94,9 +96,7 @@ function onAppState(state: AppStateStatus) {
     attempts = 0;
     connect();
   }
-  useTodosStore.getState().fetchTodos();
-  useNotificationsStore.getState().fetchNotifications();
-  useFamilyStore.getState().fetchFamily({ silent: true });
+  void sync("foreground");
 }
 
 function handle(event: RealtimeEvent) {
@@ -108,8 +108,7 @@ function handle(event: RealtimeEvent) {
       useTodosStore.getState().applyRemote(event.action, event.todo);
       break;
     case "family":
-      useFamilyStore.getState().fetchFamily({ silent: true });
-      useTodosStore.getState().fetchTodos();
+      void sync("realtime");
       break;
   }
 }

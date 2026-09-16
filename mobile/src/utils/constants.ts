@@ -1,2 +1,3 @@
 export const UPDATE_PROFILE_REDIRECT_KEY = "updateProfileRedirectDone";
-export const PN_REGISTERED_STORAGE_KEY = "PUSH_NOTIFICATION_REGISTERED";
+/** This device's Expo push token, so sign-out can revoke just this device. */
+export const PN_TOKEN_STORAGE_KEY = "PUSH_NOTIFICATION_TOKEN";

@@ -21,6 +21,9 @@ const createBody = fields
   .partial()
   .required({ title: true })
   .extend({
+    // Client-generated id so a todo created offline keeps its identity when
+    // it's synced; a replay of the same create is a no-op.
+    id: z.string().uuid().optional(),
     scope: z.enum(todoScope.enumValues).optional(),
     family_id: z.string().uuid().nullable().optional(),
   });

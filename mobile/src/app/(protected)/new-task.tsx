@@ -102,7 +102,7 @@ const NewTask = () => {
           repeat,
           reminder_minutes: reminder,
         };
-    const { error } = editing
+    const { error, queued } = editing
       ? await updateTodo(existing.id, input)
       : await createTodo(input);
     setSubmitting(false);
@@ -118,6 +118,24 @@ const NewTask = () => {
         message
       );
       return;
+    }
+
+    // Saved while offline: the assignees can't be told until we reconnect.
+    const othersAssigned = (input.assignee_ids ?? []).filter(
+      (id) => id !== creatorId && !(existing?.assignee_ids ?? []).includes(id)
+    );
+    if (queued && othersAssigned.length > 0) {
+      const names = assigneeNames(othersAssigned, members);
+      const who =
+        names.length === 0
+          ? "The assignee"
+          : names.length === 1
+            ? names[0]
+            : `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
+      Alert.alert(
+        "Saved offline",
+        `${who} will be notified once you're back online.`
+      );
     }
 
     if (editing) router.back();

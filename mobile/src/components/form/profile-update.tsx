@@ -1,3 +1,4 @@
+import { CachedAvatarImage } from "@/components/cached-avatar-image";
 import { CustomButton } from "@/components/custom-button";
 import { DateSelectorDialog } from "@/components/dialog/date-selector-dialog";
 import CameraPlus from "@/components/icons/camera-plus";
@@ -140,7 +141,7 @@ const ProfileUpdate = ({ onSaved }: { onSaved?: () => void } = {}) => {
             alt="User"
             className="bg-transparent-day dark:bg-transparent-night size-24"
           >
-            <Avatar.Image source={{ uri: avatarUri }} />
+            <CachedAvatarImage uri={avatarUri} />
             <Avatar.Fallback>
               <CameraPlus />
             </Avatar.Fallback>
